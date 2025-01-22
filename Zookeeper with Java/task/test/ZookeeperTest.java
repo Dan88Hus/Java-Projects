@@ -9,16 +9,29 @@ public class ZookeeperTest extends StageTest {
         var testedProgram = new TestedProgram();
         var output = testedProgram.start().strip();
 
-        String correctOutput = """
-            I love animals!
-            Let's check on the animals...
-            The deer looks fine.
-            The bat looks happy.
-            The lion looks healthy.
-            """;
+        String camel = """
+            Switching on the camera in the camel habitat...
+             ___.-''''-.
+            /___  @    |
+            ',,,,.     |         _.'''''''._
+                 '     |        /           \\
+                 |     \\    _.-'             \\
+                 |      '.-'                  '-.
+                 |                               ',
+                 |                                '',
+                  ',,-,                           ':;
+                       ',,| ;,,                 ,' ;;
+                          ! ; !'',,,',',,,,'!  ;   ;:
+                         : ;  ! !       ! ! ;  ;   :;
+                         ; ;   ! !      ! !  ; ;   ;,
+                        ; ;    ! !     ! !   ; ;
+                        ; ;    ! !    ! !     ; ;
+                       ;,,      !,!   !,!     ;,;
+                       /_I      L_I   L_I     /_I
+            Look at that! Our little camel is sunbathing!""";
 
-        if (!output.equals(correctOutput.strip())) {
-            return CheckResult.wrong("Your output should be like in the example!");
+        if (!output.equals(camel.strip())) {
+            return CheckResult.wrong("You should output a camel!");
         }
 
         return CheckResult.correct();
