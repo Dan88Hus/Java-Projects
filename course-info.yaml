@@ -10,5 +10,6 @@ programming_language: Java
 programming_language_version: 11
 content:
   - Zookeeper with Java
+  - Topics
 mode: Study
 yaml_version: 1
