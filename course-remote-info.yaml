@@ -7,7 +7,7 @@ update_date: "Thu, 23 Jan 2025 14:51:44 UTC"
 stages:
   - id: 2005
     step: 27998
-    is_completed: false
+    is_completed: true
   - id: 2006
     step: 27999
     is_completed: false
