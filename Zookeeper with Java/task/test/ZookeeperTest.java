@@ -3,6 +3,8 @@ import org.hyperskill.hstest.stage.StageTest;
 import org.hyperskill.hstest.testcase.CheckResult;
 import org.hyperskill.hstest.testing.TestedProgram;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class ZookeeperTest extends StageTest {
@@ -128,9 +130,7 @@ public class ZookeeperTest extends StageTest {
         (" ~----( ~   Y.  )
         It looks like we will soon have more rabbits!""";
 
-    private final String theEndMessage = "---\n" +
-        "You've reached the end of the program. " +
-        "To check another habitat, please restart the watcher.";
+    private final String theEndMessage = "See you later!";
 
     private final String[] indexArray = {"0", "1", "2", "3", "4", "5"};
 
@@ -143,23 +143,49 @@ public class ZookeeperTest extends StageTest {
         "5", new String[]{rabbit, "rabbit"}
     );
 
-    @DynamicTest(data = "indexArray")
-    CheckResult test(String index) {
+    private final String[] tests = {
+        "1\nexit",
+        "3\nexit",
+        "5\nexit",
+        "0\n2\n4\nexit",
+        "0\n1\n2\n3\n4\n5\nexit"
+    };
+
+    @DynamicTest(data = "tests")
+    CheckResult test(String input) {
+
+        var includedAnimals = List.of(
+            input.replace("\nexit", "").split("\n"));
+
+        var excludedAnimals = Arrays.stream(indexArray)
+            .filter(elem -> !includedAnimals.contains(elem))
+            .toList();
+
         var testedProgram = new TestedProgram();
         testedProgram.start();
+        var output = testedProgram.execute(input);
 
-        var output = testedProgram.execute(index);
+        for (String includedAnimal : includedAnimals) {
+            var animalImage = animalIndex.get(includedAnimal)[0];
+            var animalName = animalIndex.get(includedAnimal)[1];
 
-        var animalImage = animalIndex.get(index)[0];
-        var animalName = animalIndex.get(index)[1];
+            if (!output.contains(animalImage)) {
+                return CheckResult.wrong("The " + animalName + " wasn't printed but was expected");
+            }
+        }
 
-        if (!output.contains(animalImage)) {
-            return CheckResult.wrong("You should output a " + animalName + " " +
-                "when the input is the number " + index);
+        for (String excludedAnimal : excludedAnimals) {
+            var animalImage = animalIndex.get(excludedAnimal)[0];
+            var animalName = animalIndex.get(excludedAnimal)[1];
+
+            if (output.contains(animalImage)) {
+                return CheckResult.wrong("The " + animalName + " was printed but wasn't expected");
+            }
         }
 
         if (!output.contains(theEndMessage)) {
-            return CheckResult.wrong("You should output the message about the end of the program!");
+            return CheckResult.wrong("You should print '" + theEndMessage + "' " +
+                "at the end of the program");
         }
 
         return CheckResult.correct();

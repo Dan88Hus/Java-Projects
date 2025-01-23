@@ -1,3 +1,4 @@
+import java.sql.SQLOutput;
 import java.util.Scanner;
 
 public class Main {
@@ -123,15 +124,32 @@ public class Main {
             (" ~----( ~   Y.  )
             It looks like we will soon have more rabbits!""";
 
+        String[] animals = {camel, lion, deer, goose, bat, rabbit};
+
         // write your code here
-        String[] habitats = {camel, lion, deer, goose, bat, rabbit};
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Please enter the number of the habitat you would like to view:");
-        int habitatNumber = scanner.nextInt();
-        System.out.println(habitats[habitatNumber]);
-        System.out.println("---");
-        System.out.println("You've reached the end of the program. To check another habitat, please restart the watcher.");
 
+        while (true) {
+            System.out.println("Please enter the number of the habitat you would like to view (or 'exit' to quit):");
+            String input = scanner.nextLine();
 
+            if (input.equals("exit")) {
+                System.out.println("See you later!");
+                break;
+            }
+
+            try {
+                int habitatNumber = Integer.parseInt(input);
+                if (habitatNumber >= 0 && habitatNumber < animals.length) {
+                    System.out.println(animals[habitatNumber]);
+                } else {
+                    System.out.println("Invalid habitat number. Please try again.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number or 'exit'.");
+
+            }
+//            scanner.close();
+        }
     }
 }
