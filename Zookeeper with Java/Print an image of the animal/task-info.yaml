@@ -6,9 +6,9 @@ files:
   - name: test/ZookeeperTest.java
     visible: false
     learner_created: false
-feedback_link: https://hyperskill.org/projects/229/stages/1148/implement#comment
+feedback_link: https://hyperskill.org/learn/step/17789#comment
 status: Solved
 feedback:
   message: Congratulations!
   time: "Wed, 22 Jan 2025 15:13:41 UTC"
-record: -1
+record: 2
