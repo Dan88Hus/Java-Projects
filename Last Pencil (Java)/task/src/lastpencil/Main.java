@@ -16,13 +16,38 @@ public class Main {
         // Ask for the name of the player who goes first
         System.out.println("Who will be the first (John, Jack):");
         String firstPlayer = scanner.nextLine();
+        String secondPlayer = firstPlayer.equals("John") ? "Jack" : "John";
 
-        // Create a string of vertical bars representing pencils
-        String pencils = "|".repeat(numberOfPencils);
+        // Game loop
+        String currentPlayer = firstPlayer;
+        while (numberOfPencils > 0) {
+            // Print the current state of pencils
+            String pencils = "|".repeat(numberOfPencils);
+            System.out.println(pencils);
 
-        // Print the pencils and the first player's name
-        System.out.println(pencils);
-        System.out.println(firstPlayer + " is going first!");
+            // Print whose turn it is
+            System.out.println(currentPlayer + "'s turn:");
+
+            // Read the number of pencils to take
+            int pencilsToTake = scanner.nextInt();
+
+            // Validate the number of pencils to take
+            if (pencilsToTake > numberOfPencils) {
+                System.out.println("Error: You cannot take more pencils than are available.");
+                continue; // Skip to the next iteration
+            }
+
+            // Remove the pencils
+            numberOfPencils -= pencilsToTake;
+
+            // Check if the game is over
+            if (numberOfPencils <= 0) {
+                break; // Exit the loop if no pencils remain
+            }
+
+            // Switch players
+            currentPlayer = currentPlayer.equals(firstPlayer) ? secondPlayer : firstPlayer;
+        }
 
         // Close the scanner
         scanner.close();
