@@ -7,18 +7,22 @@ import org.hyperskill.hstest.testing.TestedProgram;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ChuckNorrisTest extends StageTest {
-  Object[][] test_data = {
-          {"greetings!","g r e e t i n g s !"},
-          {"hello world!","h e l l o   w o r l d !"},
-          {"  ","   "},
-          {"h e l l o   w o r l d !","h   e   l   l   o       w   o   r   l   d   !"},
-          {"",""}
-  };
+  Object[] test_data(){
+    String ascii = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+    List<String> list = new ArrayList<>(Arrays.asList(ascii.split("")));
+    list.addAll(Arrays.asList("greetings!",
+            "hello world!",
+            "",
+            ascii));
+    return list.toArray();
+  }
 
   @DynamicTest(data = "test_data")
-  CheckResult test(String input, String result) {
+  CheckResult test(String input) {
     TestedProgram pr = new TestedProgram();
     String output = pr.start().strip().toLowerCase();
     List<String> list = new ArrayList<>(Arrays.asList(output.split("\n")));
@@ -29,9 +33,33 @@ public class ChuckNorrisTest extends StageTest {
               "containing \"input\" substring as it shown in the example, followed by an input");
     }
     output = pr.execute(input);
-    if(!output.contains(result)){
-      return CheckResult.wrong("When the user has entered a string, there should be a line with all characters of initial" +
-              " string, separated by space. Note that space-characters should also be separated, as it shown in the example.");
+    list = new ArrayList<>(Arrays.asList(output.split("\n")));
+    list.removeAll(Arrays.asList(""));
+    if(list.size()!=1+input.length()){
+      return CheckResult.wrong("When the user has entered a string, there should be printed exactly n+1 " +
+              "non-empty lines, where n is length of input string as it shown in the example");
+    }
+    if(!list.get(0).toLowerCase().contains("result")){
+      return CheckResult.wrong("When the user has entered a string, the first line of the output " +
+              "should contain \"result\" substring");
+    }
+    Pattern pattern = Pattern.compile("(.) = ([01]{7})");
+    for (int i=0;i<input.length();i++){
+      Matcher m = pattern.matcher(list.get(i+1));
+      if(!m.matches()){
+        return CheckResult.wrong("Each string's character line should start with \"<char> = \" substring, " +
+                "followed by 7-bit sequence, even if the first digits are zeros");
+      }
+      if(!m.group(1).equals(String.valueOf(input.charAt(i)))){
+        return CheckResult.wrong("String's character lines should be ordered the same way as in initial input string " +
+                "as in example");
+      }
+      String result = Integer.toBinaryString(input.charAt(i));
+      String resultWithPadding = String.format("%7s", result).replaceAll(" ","0");
+      if(!m.group(2).equals(resultWithPadding)){
+        return CheckResult.wrong("Some of the printed 7-bit sequences not matching their characters: '" +
+                input.charAt(i)+"' should be " + resultWithPadding +", not "+m.group(2));
+      }
     }
     return CheckResult.correct();
   }
