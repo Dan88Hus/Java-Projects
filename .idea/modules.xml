@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Chuck_Norris_Cipher_Encoder_(Java).iml" filepath="$PROJECT_DIR$/.idea/modules/Chuck_Norris_Cipher_Encoder_(Java).iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Chuck Norris Cipher Encoder (Java)/task/Chuck_Norris_Cipher_Encoder_(Java).Chuck_Norris_Cipher_Encoder__Java_-task.iml" filepath="$PROJECT_DIR$/.idea/modules/Chuck Norris Cipher Encoder (Java)/task/Chuck_Norris_Cipher_Encoder_(Java).Chuck_Norris_Cipher_Encoder__Java_-task.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Chuck Norris Cipher Encoder (Java)/task/Chuck_Norris_Cipher_Encoder_(Java).Chuck_Norris_Cipher_Encoder__Java_-task.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Chuck Norris Cipher Encoder (Java)/task/Chuck_Norris_Cipher_Encoder_(Java).Chuck_Norris_Cipher_Encoder__Java_-task.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Chuck Norris Cipher Encoder (Java)/task/Chuck_Norris_Cipher_Encoder_(Java).Chuck_Norris_Cipher_Encoder__Java_-task.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Chuck Norris Cipher Encoder (Java)/task/Chuck_Norris_Cipher_Encoder_(Java).Chuck_Norris_Cipher_Encoder__Java_-task.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/util/Chuck_Norris_Cipher_Encoder_(Java).util.iml" filepath="$PROJECT_DIR$/.idea/modules/util/Chuck_Norris_Cipher_Encoder_(Java).util.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/util/Chuck_Norris_Cipher_Encoder_(Java).util.main.iml" filepath="$PROJECT_DIR$/.idea/modules/util/Chuck_Norris_Cipher_Encoder_(Java).util.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/util/Chuck_Norris_Cipher_Encoder_(Java).util.test.iml" filepath="$PROJECT_DIR$/.idea/modules/util/Chuck_Norris_Cipher_Encoder_(Java).util.test.iml" />
+    </modules>
+  </component>
+</project>
