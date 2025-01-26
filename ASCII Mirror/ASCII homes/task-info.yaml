@@ -1,0 +1,11 @@
+type: edu
+files:
+  - name: src/asciimirror/Main.java
+    visible: true
+    learner_created: false
+  - name: test/MirrorTest.java
+    visible: false
+    learner_created: false
+feedback_link: https://hyperskill.org/projects/260/stages/1317/implement#comment
+status: Unchecked
+record: -1
