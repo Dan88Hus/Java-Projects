@@ -7,8 +7,13 @@ files:
     visible: false
     learner_created: false
 feedback_link: https://hyperskill.org/learn/step/23025#comment
-status: Solved
+status: Failed
 feedback:
-  message: Congratulations!
-  time: "Sun, 26 Jan 2025 13:22:54 UTC"
+  message: "Wrong answer in test #1\n\nEach string&#39;s character line should start\
+    \ with &quot;&lt;char&gt; = &quot; substring, followed by 7-bit sequence, even\
+    \ if the first digits are zeros\n\nPlease find below the output of your program\
+    \ during this failed test.\nNote that the &#39;&gt;&#39; character indicates the\
+    \ beginning of the input line.\n\n---\n\nInput string:\n&gt;  \nThe result:\n\
+    00 00 000 00000"
+  time: "Sun, 26 Jan 2025 15:40:09 UTC"
 record: -1
