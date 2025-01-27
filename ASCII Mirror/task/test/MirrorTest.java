@@ -3,13 +3,18 @@ import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
 import org.hyperskill.hstest.stage.StageTest;
 import org.hyperskill.hstest.testcase.CheckResult;
 import org.hyperskill.hstest.testing.TestedProgram;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class MirrorTest extends StageTest {
+
   Object[][] test_data = {
           {"./test/example1.txt",1},
           {"./test/example2.txt",1},
@@ -63,11 +68,26 @@ public class MirrorTest extends StageTest {
         throw new WrongAnswer("When the user inputs a file, that can be correctly opened - output should " +
                 "contain as much lines, as there were in file.");
       }
-
+      int max=0;
+      for (String s:file_str) {
+        if(s.length()>=max){
+          max=s.length();
+        }
+      }
+      List<String> result_str= new ArrayList<>();
+      for (String s:file_str) {
+        StringBuilder sb=new StringBuilder();
+        sb.append(s);
+        sb.append(" ".repeat(max-s.length()));
+        sb.append(" | ");
+        sb.append(s);
+        sb.append(" ".repeat(max-s.length()));
+        result_str.add(sb.toString());
+      }
       for (int i=0;i<list.size();i++) {
-        if (!list.get(i).equals(file_str.get(i))) {
-          throw new WrongAnswer("When the user inputs a file, that can be correctly opened - your program " +
-                  "should output all the text from that file line by line");
+        if (list.get(i).length()!=result_str.get(i).length() || !list.get(i).equals(result_str.get(i))) {
+          throw new WrongAnswer("When the user inputs a file, that can be correctly opened - " +
+                  "each line in output should match the following pattern: \"{modified line} | {modified line}\"");
         }
       }
     }
