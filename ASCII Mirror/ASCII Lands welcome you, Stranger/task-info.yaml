@@ -7,9 +7,18 @@ files:
   - name: test/MirrorTest.java
     visible: false
     learner_created: false
-feedback_link: https://hyperskill.org/projects/260/stages/1316/implement#comment
-status: Solved
+feedback_link: https://hyperskill.org/learn/step/20315#comment
+status: Failed
 feedback:
-  message: Congratulations!
-  time: "Sun, 26 Jan 2025 16:28:25 UTC"
+  message: |-
+    Wrong answer in test #1
+
+    There should be printed exactly 8 lines, containing cow&#39;s picture
+
+    Please find below the output of your program during this failed test.
+
+    ---
+
+    Input the file path:
+  time: "Mon, 27 Jan 2025 13:04:04 UTC"
 record: -1
