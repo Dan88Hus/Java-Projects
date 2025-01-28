@@ -8,43 +8,111 @@ public class Main {
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
+        String operation;
 
-        // Input the encoded string
-        System.out.println("Input encoded string:");
-        String encoded = scanner.nextLine();
+        while (true) {
+            System.out.println("Please input operation (encode/decode/exit):");
+            operation = scanner.nextLine().trim();
 
-        // Split the encoded string into blocks of zeros
-        String[] blocks = encoded.split(" ");
-
-        // Decode the blocks into binary
-        StringBuilder binary = new StringBuilder();
-        for (int i = 0; i < blocks.length; i += 2) {
-            String prefix = blocks[i];
-            String sequence = blocks[i + 1];
-
-            if (prefix.equals("0")) {
-                binary.append("1".repeat(sequence.length()));
-            } else if (prefix.equals("00")) {
-                binary.append("0".repeat(sequence.length()));
+            if (operation.equalsIgnoreCase("encode")) {
+                System.out.println("Input string:");
+                String input = scanner.nextLine();
+                System.out.println("Encoded string:");
+                System.out.println(encode(input));
+            } else if (operation.equalsIgnoreCase("decode")) {
+                System.out.println("Input encoded string:");
+                String input = scanner.nextLine();
+                String result = decode(input);
+                if (result == null) {
+                    System.out.println("Encoded string is not valid.");
+                } else {
+                    System.out.println("Decoded string:");
+                    System.out.println(result);
+                }
+            } else if (operation.equalsIgnoreCase("exit")) {
+                System.out.println("Bye!");
+                break;
+            } else {
+                System.out.println("There is no '" + operation + "' operation");
             }
         }
 
-        // Split the binary string into chunks of 7 bits
-        List<String> binaryChunks = new ArrayList<>();
-        for (int i = 0; i < binary.length(); i += 7) {
-            int end = Math.min(i + 7, binary.length());
-            binaryChunks.add(binary.substring(i, end));
+        scanner.close();
+    }
+
+    private static String encode(String input) {
+        StringBuilder binaryString = new StringBuilder();
+        for (char c : input.toCharArray()) {
+            binaryString.append(String.format("%7s", Integer.toBinaryString(c)).replace(' ', '0'));
         }
 
-        // Convert each 7-bit chunk into a character
-        StringBuilder decodedMessage = new StringBuilder();
-        for (String chunk : binaryChunks) {
-            int charCode = Integer.parseInt(chunk, 2);
-            decodedMessage.append((char) charCode);
+        StringBuilder encoded = new StringBuilder();
+        char prevChar = ' ';
+        for (char c : binaryString.toString().toCharArray()) {
+            if (c != prevChar) {
+                if (c == '0') {
+                    encoded.append(" 00 0");
+                } else {
+                    encoded.append(" 0 0");
+                }
+            } else {
+                encoded.append("0");
+            }
+            prevChar = c;
         }
 
-        // Output the decoded message
-        System.out.println("The result:");
-        System.out.println(decodedMessage.toString());
+        return encoded.toString().trim();
+    }
+
+    private static String decode(String input) {
+        if (!isValidEncodedString(input)) {
+            return null;
+        }
+
+        StringBuilder binaryString = new StringBuilder();
+        String[] parts = input.split(" ");
+        for (int i = 0; i < parts.length; i += 2) {
+            String prefix = parts[i];
+            String zeros = parts[i + 1];
+
+            if (prefix.equals("0")) {
+                binaryString.append("1".repeat(zeros.length()));
+            } else if (prefix.equals("00")) {
+                binaryString.append("0".repeat(zeros.length()));
+            }
+        }
+
+        if (binaryString.length() % 7 != 0) {
+            return null;
+        }
+
+        StringBuilder decoded = new StringBuilder();
+        for (int i = 0; i < binaryString.length(); i += 7) {
+            String byteString = binaryString.substring(i, i + 7);
+            decoded.append((char) Integer.parseInt(byteString, 2));
+        }
+
+        return decoded.toString();
+    }
+
+    private static boolean isValidEncodedString(String input) {
+        String[] parts = input.split(" ");
+        if (parts.length % 2 != 0) {
+            return false;
+        }
+
+        for (int i = 0; i < parts.length; i += 2) {
+            String prefix = parts[i];
+            String zeros = parts[i + 1];
+
+            if (!prefix.equals("0") && !prefix.equals("00")) {
+                return false;
+            }
+            if (!zeros.matches("0+")) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

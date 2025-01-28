@@ -7,8 +7,13 @@ files:
     visible: false
     learner_created: false
 feedback_link: https://hyperskill.org/learn/step/23027#comment
-status: Solved
+status: Failed
 feedback:
-  message: Congratulations!
-  time: "Tue, 28 Jan 2025 15:49:42 UTC"
-record: -1
+  message: "Wrong answer in test #1\n\nWhen the user has entered a string, the first\
+    \ line of the output should contain &quot;result&quot; substring\n\nPlease find\
+    \ below the output of your program during this failed test.\nNote that the &#39;&gt;&#39;\
+    \ character indicates the beginning of the input line.\n\n---\n\nPlease input\
+    \ operation (encode/decode/exit):\n&gt; 00 0 0 0 00 00000 \nThere is no &#39;00\
+    \ 0 0 0 00 00000&#39; operation\nPlease input operation (encode/decode/exit):"
+  time: "Tue, 28 Jan 2025 15:54:05 UTC"
+record: 4

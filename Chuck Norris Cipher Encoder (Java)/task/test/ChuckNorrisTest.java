@@ -9,84 +9,94 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ChuckNorrisTest extends StageTest {
-  class Case{
-    String input;
-    String result;
-    String invert;
-    Case(String input, String result, String invert){
-      this.input=input;
-      this.result=result;
-      this.invert=invert;
-    }
-  }
-  Object[] test_data(){
-    String ascii = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-    List<String> list = new ArrayList<>(Arrays.asList(ascii.split("")));
-    list.addAll(Arrays.asList("greetings!",
-            "hello world!",
-            ascii));
-    List<Case> r = new ArrayList<>();
-    for(String s : list){
-      String code = "";
-      String result_inv = "";
-      for (int i=0;i<s.length();i++){
-        String result = Integer.toBinaryString(s.charAt(i));
-        String resultWithPadding = String.format("%7s", result).replaceAll(" ","0");
-        code = code.concat(resultWithPadding);
-      }
-      for(int i=0;i<code.length()/7;i++){
-        String tmp = code.substring(i*7,(i+1)*7).replace('0', '2').replace('1', '0').replace('2', '1');
-        char c =  (char)Integer.parseInt(tmp,2);
-        result_inv = result_inv.concat(String.valueOf(c));
-      }
-      String result="";
-      char x=code.charAt(0);
-      int start=0;
-      for(int i=1;i<code.length();i++){
-        if(code.charAt(i)!=x){
-          result = result.concat(x=='1'?"0 ":"00 ").concat("0".repeat(i-start)+" ");
-          x=code.charAt(i);
-          start=i;
-        }
-      }
-      result = result.concat(x=='1'?"0 ":"00 ").concat("0".repeat(code.length()-start)+" ");
 
-      r.add(new Case(result,s,result_inv));
-    }
-    return r.toArray();
-  }
-
-  @DynamicTest(data = "test_data")
-  CheckResult test(Case input_case) {
+  @DynamicTest()
+  CheckResult test() {
     TestedProgram pr = new TestedProgram();
-    String output = pr.start().strip().toLowerCase();
+    String output = pr.start().strip();
     List<String> list = new ArrayList<>(Arrays.asList(output.split("\n")));
     list.removeAll(Arrays.asList(""));
 
-    if(list.size()!=1 || !list.get(0).contains("input")){
+    if(list.size()!=1 || !list.get(0).contains("Please input operation (encode/decode/exit):")){
       return CheckResult.wrong("When the program just started, output should contain exactly 1 non-empty line, " +
-              "containing \"input\" substring as it shown in the example, followed by an input");
-    }
-    output = pr.execute(input_case.input);
-    list = new ArrayList<>(Arrays.asList(output.split("\n")));
-    list.removeAll(Arrays.asList(""));
-    if(list.size()!=2){
-      return CheckResult.wrong("When the user has entered a string, there should be printed exactly 2 " +
-              "non-empty lines");
-    }
-    if(!list.get(0).toLowerCase().contains("result")){
-      return CheckResult.wrong("When the user has entered a string, the first line of the output " +
-              "should contain \"result\" substring");
-    }
-    if(list.get(1).equals(input_case.invert)){
-      return CheckResult.wrong("Input string was not decoded correctly, in this case the reason might be that you've " +
-              "decoded '0' sequence with first block \"0\" and '1' sequence with first block \"00\", so the decoded " +
-              "string is \"inverted\"");
-    }
-    if(!list.get(1).equals(input_case.result)){
-      return CheckResult.wrong("Input string was not decoded correctly.");
+              "containing \"Please input operation (encode/decode/exit):\" as it shown in the example, followed by an input");
     }
 
+    output = pr.execute("encode").strip().toLowerCase();
+    list = new ArrayList<>(Arrays.asList(output.split("\n")));
+    list.removeAll(Arrays.asList(""));
+    if(list.size()!=1 || !list.get(0).contains("input string")){
+      return CheckResult.wrong("When the user has chosen \"encode\" as an operation, there should be printed exactly 1 " +
+              "non-empty line, containing \"input string\" substring, followed by an input");
+    }
+    output = pr.execute("H W!").strip().toLowerCase();
+    list = new ArrayList<>(Arrays.asList(output.split("\n")));
+    list.removeAll(Arrays.asList(""));
+    if(list.size()!=3 || !list.get(0).contains("encoded string") ||
+            !list.get(2).contains("please input operation (encode/decode/exit):")){
+      return CheckResult.wrong("When the user provided a string for encoding, there should be printed exactly 3 " +
+              "non-empty lines, the first one with \"encoded string\" substring, the second one, with an encoded string," +
+              "and the last one is \"Please input operation (encode/decode/exit):\" as an operation is finished and" +
+              "the program is looped");
+    }
+    if(!list.get(1).contains("0 0 00 00 0 0 00 0000 0 0 00 00000 0 0 00 0 0 0 00 0 0 000 00 0 0 0 00 0000 0 0")){
+      return CheckResult.wrong("When the user provided a string for encoding, the second non-empty " +
+              "line of an output should contain an encoded string. Make sure, that encryption is correct and the " +
+              "encoding of a single character sequence is not separated.");
+    }
+
+    output = pr.execute("decode").strip().toLowerCase();
+    list = new ArrayList<>(Arrays.asList(output.split("\n")));
+    list.removeAll(Arrays.asList(""));
+    if(list.size()!=1 || !list.get(0).contains("encoded string")){
+      return CheckResult.wrong("When the user has chosen \"decode\" as an operation, there should be printed exactly 1 " +
+              "non-empty line, containing \"encoded string\" substring, followed by an input");
+    }
+    output = pr.execute("0 0 00 00 0 0 00 0000 0 0 00 00000 0 0 00 0 0 0 00 0 0 000 00 0 0 0 00 0000 0 0").strip().toLowerCase();
+    list = new ArrayList<>(Arrays.asList(output.split("\n")));
+    list.removeAll(Arrays.asList(""));
+    if(list.size()!=3 || !list.get(0).contains("decoded string") ||
+            !list.get(2).contains("please input operation (encode/decode/exit):")){
+      return CheckResult.wrong("When the user provided a string for decoding, there should be printed exactly 3 " +
+              "non-empty lines, the first one with \"decoded string\" substring, the second one, with a decoded string," +
+              "and the last one is \"Please input operation (encode/decode/exit):\" as an operation is finished and" +
+              "the program is looped");
+    }
+    if(!list.get(1).contains("h w!")){
+      return CheckResult.wrong("When the user provided a string for decoding, the second non-empty " +
+              "line of an output should contain a decoded string. Make sure, that decryption is correct.");
+    }
+
+    output = pr.execute("Hello world!").strip();
+    list = new ArrayList<>(Arrays.asList(output.split("\n")));
+    list.removeAll(Arrays.asList(""));
+    if(list.size()!=2 || !list.get(0).contains("There is no 'Hello world!' operation") ||
+            !list.get(1).contains("Please input operation (encode/decode/exit):")){
+        return CheckResult.wrong("When the user had chosen an operation, that is not \"decode\", \"encode\" or \"exit\"," +
+                " there should be printed exactly 2 non-empty lines, the one that contains " +
+                "\"There is no '<user's input>' operation\" substring, and the \"Please input operation" +
+                " (encode/decode/exit):\" one as the program is looped");
+    }
+    for(String s : new String[]{"hello world!",
+            "0 0 00 00 0 0 00 0000 0 0 00 0 0 00 0 0 0 00 0 0 000 00 0 0 0 00 0000 0 0",
+            "0 0 00 00 0 0 00 000 0 0 00 0000 0 0 00 0 0 0 00 0 0 000 00 0 0 0 00 0000 0 0",
+            "0 0 00 00 0 0 000 000"}) {
+      pr.execute("decode");
+      output = pr.execute(s).strip().toLowerCase();
+      list = new ArrayList<>(Arrays.asList(output.split("\n")));
+      list.removeAll(Arrays.asList(""));
+      if (list.size() != 2 || !list.get(0).contains("not valid") ||
+              !list.get(1).contains("please input operation (encode/decode/exit):")) {
+        return CheckResult.wrong("When the user provided not valid encoded string, there should be printed exactly 2 " +
+                "non-empty lines, the one that contains \"not valid\" substring, and the \"Please input " +
+                "operation (encode/decode/exit):\" one as an operation is finished and the program is looped");
+      }
+    }
+    output = pr.execute("exit").strip().toLowerCase();
+    if(!output.contains("bye") || !pr.isFinished()){
+      return CheckResult.wrong("When the user has chosen \"exit\" as an operation, there should be \"Bye\" substring" +
+              " in output and the program should finish it's execution");
+    }
     return CheckResult.correct();
   }
 }
