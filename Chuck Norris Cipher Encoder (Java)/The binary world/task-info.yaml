@@ -13,7 +13,7 @@ feedback:
     \ with &quot;&lt;char&gt; = &quot; substring, followed by 7-bit sequence, even\
     \ if the first digits are zeros\n\nPlease find below the output of your program\
     \ during this failed test.\nNote that the &#39;&gt;&#39; character indicates the\
-    \ beginning of the input line.\n\n---\n\nInput string:\n&gt;  \nThe result:\n\
-    00 00 000 00000"
-  time: "Sun, 26 Jan 2025 15:40:09 UTC"
-record: -1
+    \ beginning of the input line.\n\n---\n\nInput string:\n&gt;  \n\nThe result:\n\
+    00 0 0 0 00 00000"
+  time: "Sun, 26 Jan 2025 15:45:41 UTC"
+record: 2
