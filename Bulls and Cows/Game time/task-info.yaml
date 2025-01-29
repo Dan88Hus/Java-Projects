@@ -1,0 +1,12 @@
+type: edu
+custom_name: Game time!
+files:
+  - name: src/bullscows/Main.java
+    visible: true
+    learner_created: false
+  - name: test/BullsCowsTest.java
+    visible: false
+    learner_created: false
+feedback_link: https://hyperskill.org/projects/53/stages/290/implement#comment
+status: Unchecked
+record: -1
