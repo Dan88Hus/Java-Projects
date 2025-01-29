@@ -1,47 +1,48 @@
 package bullscows;
 
+import java.util.HashSet;
 import java.util.Scanner;
 
 public class Main {
-    private static final String SECRET_CODE = "9305";
+    private static String secretCode;
     
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter a 4-digit number:");
-        String guess = scanner.next();
+        System.out.print("> ");
+        int length = scanner.nextInt();
         scanner.close();
 
-        gradeGuess(guess);
-        
+        String secretNumber = generateSecretNumber(length);
+
+        if (secretNumber != null) {
+            System.out.println("The random secret number is " + secretNumber + ".");
+        }
     }
 
-    private static void gradeGuess(String guess) {
-        int bulls = 0, cows = 0;
+    public static String generateSecretNumber(int length) {
+        if (length > 10) {
+            System.out.println("Error: can't generate a secret number with a length of " + length + " because there aren't enough unique digits.");
+            return null;
+        }
 
-        for (int i = 0; i < SECRET_CODE.length(); i++) {
-            if (guess.charAt(i) == SECRET_CODE.charAt(i)) {
-                bulls++;
-            } else if (SECRET_CODE.contains(String.valueOf(guess.charAt(i)))) {
-                cows++;
+        while (true) {
+            long pseudoRandomNumber = System.nanoTime();
+            String numberString = new StringBuilder(Long.toString(pseudoRandomNumber)).reverse().toString();
+            HashSet<Character> uniqueDigits = new HashSet<>();
+            StringBuilder secretCode = new StringBuilder();
+
+            for (char digit : numberString.toCharArray()) {
+                if (uniqueDigits.size() == length) break;
+                if (!uniqueDigits.contains(digit) && (secretCode.length() > 0 || digit != '0')) {
+                    uniqueDigits.add(digit);
+                    secretCode.append(digit);
+                }
+            }
+
+            if (secretCode.length() == length) {
+                return secretCode.toString();
             }
         }
-        System.out.print("Grade: ");
-        if (bulls == 0 && cows == 0) {
-            System.out.print("None");
-        } else {
-            if (bulls > 0) {
-                System.out.print(bulls + " bull(s)");
-            }
-            if (bulls > 0 && cows > 0) {
-                System.out.print(" and ");
-            }
-            if (cows > 0) {
-                System.out.print(cows + " cow(s)");
-            }
-        }
-        System.out.println(". The secret code is " + SECRET_CODE + ".");
-
-
     }
 }
