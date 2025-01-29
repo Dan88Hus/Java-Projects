@@ -1,6 +1,7 @@
 package bullscows;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
@@ -47,24 +48,20 @@ public class Main {
             return null;
         }
 
-        while (true) {
-            long pseudoRandomNumber = System.nanoTime();
-            String numberString = new StringBuilder(Long.toString(pseudoRandomNumber)).reverse().toString();
-            HashSet<Character> uniqueDigits = new HashSet<>();
-            StringBuilder secretCode = new StringBuilder();
+        HashSet<Character> uniqueDigits = new HashSet<>();
+        StringBuilder secretCode = new StringBuilder();
+        Random random = new Random();
 
-            for (char digit : numberString.toCharArray()) {
-                if (uniqueDigits.size() == length) break;
-                if (!uniqueDigits.contains(digit) && (secretCode.length() > 0 || digit != '0')) {
-                    uniqueDigits.add(digit);
-                    secretCode.append(digit);
-                }
+        while (uniqueDigits.size() < length) {
+            char digit = (char) ('0' + random.nextInt(10));
+            if (uniqueDigits.isEmpty() && digit == '0') {
+                continue;
             }
-
-            if (secretCode.length() == length) {
-                return secretCode.toString();
+            if (uniqueDigits.add(digit)) {
+                secretCode.append(digit);
             }
         }
+            return secretCode.toString();
     }
 
     public static int countBulls(String secret, String guess) {
