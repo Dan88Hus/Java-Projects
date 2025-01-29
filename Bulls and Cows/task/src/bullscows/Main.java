@@ -5,23 +5,36 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
-    
+    private static final String SYMBOLS = "0123456789abcdefghijklmnopqrstuvwxyz";
+
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Please, enter the secret code's length:");
+        System.out.println("Input the length of the secret code:");
         System.out.print("> ");
         int length = scanner.nextInt();
 
-        String secretNumber = generateSecretNumber(length);
+        System.out.println("Input the number of possible symbols in the code:");
+        System.out.print("> ");
+        int range = scanner.nextInt();
+
+        if (length > range || range > SYMBOLS.length()) {
+            System.out.println("Error: invalid input. The length of the code cannot be greater than the number of possible symbols.");
+            return;
+        }
+
+        String secretNumber = generateSecretCode(length, range);
         if (secretNumber == null) {
             return;
         }
 
+        String visibleSecret = "*".repeat(length);
+        String usedSymbols = SYMBOLS.substring(0, range);
+        System.out.println("The secret is prepared: " + visibleSecret + " (" + usedSymbols.charAt(0) + "-" + usedSymbols.charAt(usedSymbols.length() - 1) + ").");
         System.out.println("Okay, let's start a game!");
-        int turn = 1;
 
+        int turn = 1;
         while (true) {
             System.out.println("Turn " + turn + ":");
             System.out.print("> ");
@@ -30,7 +43,15 @@ public class Main {
             int bulls = countBulls(secretNumber, guess);
             int cows = countCows(secretNumber, guess) - bulls;
 
-            System.out.println("Grade: " + bulls + (bulls == 1 ? " bull" : " bulls") + " and " + cows + (cows == 1 ? " cow" : " cows"));
+            if (bulls == 0 && cows == 0) {
+                System.out.println("Grade: None");
+            } else if (bulls > 0 && cows > 0) {
+                System.out.println("Grade: " + bulls + (bulls == 1 ? " bull" : " bulls") + " and " + cows + (cows == 1 ? " cow" : " cows"));
+            } else if (bulls > 0) {
+                System.out.println("Grade: " + bulls + (bulls == 1 ? " bull" : " bulls"));
+            } else {
+                System.out.println("Grade: " + cows + (cows == 1 ? " cow" : " cows"));
+            }
 
             if (bulls == length) {
                 System.out.println("Congratulations! You guessed the secret code.");
@@ -42,26 +63,19 @@ public class Main {
         scanner.close();
     }
 
-    public static String generateSecretNumber(int length) {
-        if (length > 10) {
-            System.out.println("Error: can't generate a secret number with a length of " + length + " because there aren't enough unique digits.");
-            return null;
-        }
-
-        HashSet<Character> uniqueDigits = new HashSet<>();
-        StringBuilder secretCode = new StringBuilder();
+    public static String generateSecretCode(int length, int range) {
         Random random = new Random();
+        HashSet<Character> uniqueSymbols = new HashSet<>();
+        StringBuilder secretCode = new StringBuilder();
 
-        while (uniqueDigits.size() < length) {
-            char digit = (char) ('0' + random.nextInt(10));
-            if (uniqueDigits.isEmpty() && digit == '0') {
-                continue;
-            }
-            if (uniqueDigits.add(digit)) {
-                secretCode.append(digit);
+        while (uniqueSymbols.size() < length) {
+            char symbol = SYMBOLS.charAt(random.nextInt(range));
+            if (uniqueSymbols.add(symbol)) {
+                secretCode.append(symbol);
             }
         }
-            return secretCode.toString();
+
+        return secretCode.toString();
     }
 
     public static int countBulls(String secret, String guess) {
@@ -82,5 +96,6 @@ public class Main {
             }
         }
         return cows;
+
     }
 }

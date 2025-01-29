@@ -7,8 +7,22 @@ files:
     visible: false
     learner_created: false
 feedback_link: https://hyperskill.org/projects/53/stages/291/implement#comment
-status: Solved
+status: Failed
 feedback:
-  message: Congratulations!
-  time: "Wed, 29 Jan 2025 16:02:19 UTC"
-record: -1
+  message: |-
+    Wrong answer in test #1
+
+    Cannot find number of bulls or number of cows or None after the input.
+
+    Please find below the output of your program during this failed test.
+    Note that the &#39;&gt;&#39; character indicates the beginning of the input line.
+
+    ---
+
+    Input the length of the secret code:
+    &gt; &gt; 1
+    Input the number of possible symbols in the code:
+    &gt; &gt; 0
+    Error: invalid input. The length of the code cannot be greater than the number of possible symbols.
+  time: "Wed, 29 Jan 2025 16:09:01 UTC"
+record: 5
