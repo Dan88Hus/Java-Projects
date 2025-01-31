@@ -6,6 +6,31 @@ files:
   - name: test/ReadabilityTest.java
     visible: false
     learner_created: false
-feedback_link: https://hyperskill.org/projects/39/stages/208/implement#comment
-status: Unchecked
+feedback_link: https://hyperskill.org/learn/step/5265#comment
+status: Failed
+feedback:
+  message: |-
+    Wrong answer in test #1
+
+    There is no Automated Readability Index in output
+
+    Please find below the output of your program during this failed test.
+    Note that the &#39;&gt;&#39; character indicates the beginning of the input line.
+
+    ---
+
+    Arguments: input.txt
+
+    Words: 108
+    Sentences: 6
+    Characters: 580
+    Syllables: 197
+    Polysyllables: 21
+    Enter the score you want to calculate (ARI, FK, SMOG, CL, all): &gt; all
+    Automated Readability Index: 63.32 (about 64-year-olds).
+    Flesch–Kincaid readability tests: 12.95 (about 13-year-olds).
+    Simple Measure of Gobbledygook: 112.64 (about 113-year-olds).
+    Coleman–Liau index: 14.13 (about 15-year-olds).
+    This text should be understood in average by 50.76-year-olds.
+  time: "Fri, 31 Jan 2025 15:03:02 UTC"
 record: -1
