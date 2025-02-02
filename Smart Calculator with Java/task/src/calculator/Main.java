@@ -55,17 +55,29 @@ public class Main {
     }
 
     private static String preprocessExpression(String expression) {
-        // Normalize spaces
+// Normalize spaces
         String processed = expression.replaceAll("\\s+", " ");
-        // Replace multiple consecutive operators
-        processed = processed.replaceAll("\\+\\+", "+");
-        processed = processed.replaceAll("--", "+");
-        processed = processed.replaceAll("\\+\\s*-", "-");
-        processed = processed.replaceAll("-\\s*\\+", "-");
-        processed = processed.replaceAll("\\+\\s*-\\s*-", "+");
-        processed = processed.replaceAll("-\\s*-\\s*-", "-");
-        // Remove any leading '+'
+
+        // Reduce multiple '+' signs to a single '+'
+        processed = processed.replaceAll("\\++", "+");
+
+        // Reduce multiple '-' signs:
+        while (processed.contains("--")) {
+            processed = processed.replaceAll("--", "+");
+        }
+        while (processed.contains("-+")) {
+            processed = processed.replaceAll("-+", "-");
+        }
+        while (processed.contains("+-")) {
+            processed = processed.replaceAll("\\+-", "-");
+        }
+        while (processed.contains("++")) {
+            processed = processed.replaceAll("\\+\\+", "+");
+        }
+
+        // Remove leading '+'
         processed = processed.replaceAll("^\\+", "");
+
         // Remove any leading or trailing spaces
         return processed.trim();
     }
