@@ -7,5 +7,15 @@ files:
     visible: false
     learner_created: false
 feedback_link: https://hyperskill.org/learn/step/5322#comment
-status: Unchecked
+status: Failed
+feedback:
+  message: "Wrong answer in test #1\n\nThe program cannot process multiple operations\
+    \ with several operators.\n\nPlease find below the output of your program during\
+    \ this failed test.\nNote that the &#39;&gt;&#39; character indicates the beginning\
+    \ of the input line.\n\n---\n\n&gt; /help\nSupported operations: +, -, *, /, ^\
+    \ (power), parentheses (). Variables are allowed.\n&gt; \n&gt; n = -32\n&gt; 33\
+    \ + 20 + 11 + 49 - 32 - 9 + 1 - 80 + 4\n-3\n&gt; 33 + 20 + 11 + 49 + n - 9 + 1\
+    \ - 80 + 4\n-3\n&gt; c = n \n&gt; c = -2\n&gt;   c   \n-2\n&gt; 11 - 9 + c\n0\n\
+    &gt; 5 --- 2 ++++++ 4 -- 2 ---- 1\nInvalid expression"
+  time: "Sun, 02 Feb 2025 16:12:01 UTC"
 record: -1

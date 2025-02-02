@@ -5,42 +5,36 @@ import java.util.*;
 public class Main {
     private static final Map<String, Integer> variables = new HashMap<>();
 
+    private static final Map<String, Integer> precedence = Map.of(
+            "+", 1, "-", 1, "*", 2, "/", 2, "^", 3
+    );
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
             String input = scanner.nextLine().trim();
-
-            // Skip processing if input is empty
-            if (input.isEmpty()) {
-                continue;
-            }
-
-            if (!processInput(input)) {
-                break;
-            }
+            if (input.isEmpty()) continue;
+            if (!processInput(input)) break;
         }
 
         scanner.close();
     }
 
-    public static boolean processInput(String input) {
+    private static boolean processInput(String input) {
         if (input.startsWith("/")) {
             return processCommand(input);
         } else if (input.contains("=")) {
             processAssignment(input);
-        } else if (isValidIdentifier(input)) {
-            processVariable(input);
         } else {
             processExpression(input);
         }
-
         return true;
     }
 
     private static boolean processCommand(String input) {
         if (input.equals("/help")) {
-            System.out.println("This is a calculator that supports basic operations and variable storage.");
+            System.out.println("Supported operations: +, -, *, /, ^ (power), parentheses (). Variables are allowed.");
         } else if (input.equals("/exit")) {
             System.out.println("Bye!");
             return false;
@@ -52,7 +46,6 @@ public class Main {
 
     private static void processAssignment(String input) {
         String[] parts = input.split("\\s*=\\s*");
-
         if (parts.length != 2) {
             System.out.println("Invalid assignment");
             return;
@@ -82,84 +75,122 @@ public class Main {
         }
     }
 
-    private static void processVariable(String variable) {
-        if (variables.containsKey(variable)) {
-            System.out.println(variables.get(variable));
-        } else {
-            System.out.println("Unknown variable");
-        }
-    }
-
     private static void processExpression(String expression) {
-        String preprocessedInput = preprocessExpression(expression);
-
-        if (!isValidExpression(preprocessedInput)) {
-            System.out.println("Invalid expression");
-            return;
-        }
-
         try {
-            int result = evaluateExpression(preprocessedInput);
+            String postfix = infixToPostfix(expression);
+            int result = evaluatePostfix(postfix);
             System.out.println(result);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             System.out.println("Invalid expression");
         }
     }
 
-    private static String preprocessExpression(String expression) {
-        String processed = expression.replaceAll("\\s+", " ");
-        processed = processed.replaceAll("\\++", "+");
-        while (processed.contains("--")) {
-            processed = processed.replaceAll("--", "+");
-        }
-        while (processed.contains("-+")) {
-            processed = processed.replaceAll("-+", "-");
-        }
-        while (processed.contains("+-")) {
-            processed = processed.replaceAll("\\+-", "-");
-        }
-        processed = processed.replaceAll("^\\+", "");
-        return processed.trim();
-    }
-
-    private static boolean isValidIdentifier(String input) {
-        return input.matches("[a-zA-Z]+");
-    }
-
-    private static boolean isValidExpression(String input) {
-        return input.matches("[a-zA-Z0-9\\+\\-\\s]+");
-    }
-
-    private static int evaluateExpression(String expression) throws Exception {
-        String[] tokens = expression.split(" ");
-        int result = 0;
-        boolean isNegative = false;
+    private static String infixToPostfix(String infix) {
+        infix = preprocessExpression(infix);
+        List<String> tokens = tokenize(infix);
+        StringBuilder output = new StringBuilder();
+        Deque<String> stack = new ArrayDeque<>();
 
         for (String token : tokens) {
-            if (token.equals("+")) {
-                continue;
-            } else if (token.equals("-")) {
-                isNegative = true;
-            } else {
-                int num;
-                if (isValidIdentifier(token)) {
-                    if (variables.containsKey(token)) {
-                        num = variables.get(token);
-                    } else {
-                        throw new Exception("Unknown variable");
-                    }
-                } else {
-                    num = Integer.parseInt(token);
+            if (isNumber(token) || isValidIdentifier(token)) {
+                output.append(token).append(" ");
+            } else if (token.equals("(")) {
+                stack.push(token);
+            } else if (token.equals(")")) {
+                while (!stack.isEmpty() && !stack.peek().equals("(")) {
+                    output.append(stack.pop()).append(" ");
                 }
+                if (stack.isEmpty()) throw new IllegalArgumentException();
+                stack.pop();
+            } else if (precedence.containsKey(token)) {
+                while (!stack.isEmpty() && precedence.getOrDefault(stack.peek(), 0) >= precedence.get(token)) {
+                    output.append(stack.pop()).append(" ");
+                }
+                stack.push(token);
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
 
-                if (isNegative) {
-                    result -= num;
-                    isNegative = false;
-                } else {
-                    result += num;
+        while (!stack.isEmpty()) {
+            String op = stack.pop();
+            if (op.equals("(")) throw new IllegalArgumentException();
+            output.append(op).append(" ");
+        }
+
+        return output.toString().trim();
+    }
+
+    private static int evaluatePostfix(String postfix) {
+        Deque<Integer> stack = new ArrayDeque<>();
+        List<String> tokens = Arrays.asList(postfix.split(" "));
+
+        for (String token : tokens) {
+            if (isNumber(token)) {
+                stack.push(Integer.parseInt(token));
+            } else if (isValidIdentifier(token)) {
+                if (!variables.containsKey(token)) throw new IllegalArgumentException();
+                stack.push(variables.get(token));
+            } else {
+                if (stack.size() < 2) throw new IllegalArgumentException();
+                int b = stack.pop();
+                int a = stack.pop();
+                switch (token) {
+                    case "+": stack.push(a + b); break;
+                    case "-": stack.push(a - b); break;
+                    case "*": stack.push(a * b); break;
+                    case "/":
+                        if (b == 0) throw new ArithmeticException("Division by zero");
+                        stack.push(a / b); break;
+                    case "^": stack.push((int) Math.pow(a, b)); break;
+                    default: throw new IllegalArgumentException();
                 }
             }
         }
-        return result;
+
+        if (stack.size() != 1) throw new IllegalArgumentException();
+        return stack.pop();
+    }
+
+    private static String preprocessExpression(String expression) {
+        expression = expression.replaceAll("\\s+", "");
+        expression = expression.replaceAll("\\++", "+");
+        expression = expression.replaceAll("--", "+");
+        expression = expression.replaceAll("-+", "-");
+        expression = expression.replaceAll("\\*-|/\\+|\\*\\+|/\\+", "*");
+        return expression;
+    }
+
+    private static List<String> tokenize(String expression) {
+        List<String> tokens = new ArrayList<>();
+        StringBuilder number = new StringBuilder();
+
+        for (char ch : expression.toCharArray()) {
+            if (Character.isDigit(ch)) {
+                number.append(ch);
+            } else {
+                if (number.length() > 0) {
+                    tokens.add(number.toString());
+                    number.setLength(0);
+                }
+                if (ch == '(' || ch == ')' || precedence.containsKey(String.valueOf(ch))) {
+                    tokens.add(String.valueOf(ch));
+                } else if (Character.isLetter(ch)) {
+                    tokens.add(String.valueOf(ch));
+                } else {
+                    throw new IllegalArgumentException();
+                }
+            }
+        }
+        if (number.length() > 0) tokens.add(number.toString());
+        return tokens;
+    }
+
+    private static boolean isValidIdentifier(String str) {
+        return str.matches("[a-zA-Z]+");
+    }
+
+    private static boolean isNumber(String str) {
+        return str.matches("\\d+");
     }
 }
