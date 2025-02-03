@@ -4,7 +4,6 @@ import java.util.*;
 
 public class Main {
     private static final Map<String, Integer> variables = new HashMap<>();
-
     private static final Map<String, Integer> precedence = Map.of(
             "+", 1, "-", 1, "*", 2, "/", 2, "^", 3
     );
@@ -77,6 +76,8 @@ public class Main {
 
     private static void processExpression(String expression) {
         try {
+            expression = preprocessExpression(expression);
+            expression = replaceVariables(expression);
             String postfix = infixToPostfix(expression);
             int result = evaluatePostfix(postfix);
             System.out.println(result);
@@ -85,14 +86,59 @@ public class Main {
         }
     }
 
+    private static String preprocessExpression(String expression) {
+        expression = expression.replaceAll("\\s+", ""); // Remove spaces
+        expression = expression.replaceAll("\\++", "+"); // Convert multiple '+' to single '+'
+        expression = expression.replaceAll("--", "+"); // Convert '--' to '+'
+        expression = expression.replaceAll("-\\+", "-"); // Convert '-+' to '-'
+        expression = expression.replaceAll("\\+-", "-"); // Convert '+-' to '-'
+        expression = expression.replaceAll("\\-\\-\\-+", "-"); // Convert '---' to '-'
+        expression = expression.replaceAll("\\+\\+\\++", "+"); // Convert '+++' to '+'
+        return expression;
+    }
+
+    private static String replaceVariables(String expression) {
+        StringBuilder newExpression = new StringBuilder();
+        StringBuilder variable = new StringBuilder();
+
+        for (int i = 0; i < expression.length(); i++) {
+            char ch = expression.charAt(i);
+
+            if (Character.isLetter(ch)) {
+                variable.append(ch);
+            } else {
+                if (variable.length() > 0) {
+                    String varName = variable.toString();
+                    if (variables.containsKey(varName)) {
+                        newExpression.append(variables.get(varName)); // Replace variable with value
+                    } else {
+                        throw new IllegalArgumentException("Unknown variable");
+                    }
+                    variable.setLength(0);
+                }
+                newExpression.append(ch);
+            }
+        }
+
+        if (variable.length() > 0) {
+            String varName = variable.toString();
+            if (variables.containsKey(varName)) {
+                newExpression.append(variables.get(varName));
+            } else {
+                throw new IllegalArgumentException("Unknown variable");
+            }
+        }
+
+        return newExpression.toString();
+    }
+
     private static String infixToPostfix(String infix) {
-        infix = preprocessExpression(infix);
         List<String> tokens = tokenize(infix);
         StringBuilder output = new StringBuilder();
         Deque<String> stack = new ArrayDeque<>();
 
         for (String token : tokens) {
-            if (isNumber(token) || isValidIdentifier(token)) {
+            if (isNumber(token)) {
                 output.append(token).append(" ");
             } else if (token.equals("(")) {
                 stack.push(token);
@@ -128,9 +174,6 @@ public class Main {
         for (String token : tokens) {
             if (isNumber(token)) {
                 stack.push(Integer.parseInt(token));
-            } else if (isValidIdentifier(token)) {
-                if (!variables.containsKey(token)) throw new IllegalArgumentException();
-                stack.push(variables.get(token));
             } else {
                 if (stack.size() < 2) throw new IllegalArgumentException();
                 int b = stack.pop();
@@ -152,36 +195,36 @@ public class Main {
         return stack.pop();
     }
 
-    private static String preprocessExpression(String expression) {
-        expression = expression.replaceAll("\\s+", "");
-        expression = expression.replaceAll("\\++", "+");
-        expression = expression.replaceAll("--", "+");
-        expression = expression.replaceAll("-+", "-");
-        expression = expression.replaceAll("\\*-|/\\+|\\*\\+|/\\+", "*");
-        return expression;
-    }
-
     private static List<String> tokenize(String expression) {
         List<String> tokens = new ArrayList<>();
         StringBuilder number = new StringBuilder();
+        boolean lastWasOperator = true;
 
-        for (char ch : expression.toCharArray()) {
+        for (int i = 0; i < expression.length(); i++) {
+            char ch = expression.charAt(i);
+
             if (Character.isDigit(ch)) {
                 number.append(ch);
+                lastWasOperator = false;
             } else {
                 if (number.length() > 0) {
                     tokens.add(number.toString());
                     number.setLength(0);
                 }
-                if (ch == '(' || ch == ')' || precedence.containsKey(String.valueOf(ch))) {
-                    tokens.add(String.valueOf(ch));
-                } else if (Character.isLetter(ch)) {
-                    tokens.add(String.valueOf(ch));
+
+                if (precedence.containsKey(String.valueOf(ch))) {
+                    if (ch == '-' && lastWasOperator) {
+                        number.append(ch);
+                    } else {
+                        tokens.add(String.valueOf(ch));
+                        lastWasOperator = true;
+                    }
                 } else {
-                    throw new IllegalArgumentException();
+                    tokens.add(String.valueOf(ch));
                 }
             }
         }
+
         if (number.length() > 0) tokens.add(number.toString());
         return tokens;
     }
@@ -191,6 +234,6 @@ public class Main {
     }
 
     private static boolean isNumber(String str) {
-        return str.matches("\\d+");
+        return str.matches("-?\\d+");
     }
 }
