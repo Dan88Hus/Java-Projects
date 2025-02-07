@@ -1,0 +1,17 @@
+type: edu
+files:
+  - name: src/tracker/Main.java
+    visible: true
+    learner_created: false
+  - name: test/tracker/SampleTest.java
+    visible: true
+    learner_created: false
+  - name: build.gradle
+    visible: true
+    learner_created: false
+  - name: test/LearningProgressTrackerTest.java
+    visible: false
+    learner_created: false
+feedback_link: https://hyperskill.org/projects/197/stages/982/implement#comment
+status: Unchecked
+record: -1
