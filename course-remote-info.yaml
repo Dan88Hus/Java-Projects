@@ -3,7 +3,7 @@ hyperskill_project:
   ide_files: https://cogniterra.org/media/attachments/lesson/25673/additional_files.json
   is_template_based: false
   use_ide: true
-update_date: "Fri, 07 Feb 2025 11:28:59 UTC"
+update_date: "Fri, 14 Feb 2025 12:57:19 UTC"
 stages:
   - id: 979
     step: 14396
@@ -13,7 +13,7 @@ stages:
     is_completed: true
   - id: 981
     step: 14398
-    is_completed: false
+    is_completed: true
   - id: 982
     step: 14399
     is_completed: false
@@ -40,6 +40,8 @@ topics:
       theory_id: 9746
     - title: Units of information
       theory_id: 6865
+    - title: IDE
+      theory_id: 10996
     - title: Immutability
       theory_id: 7929
     - title: Fixed-size array
@@ -134,6 +136,16 @@ topics:
       theory_id: 5538
     - title: Debugging techniques
       theory_id: 13775
+    - title: Debugging overview
+      theory_id: 14368
+    - title: IntelliJ IDEA
+      theory_id: 37202
+    - title: Run and debug with IntelliJ IDEA
+      theory_id: 37206
+    - title: Debugging simple constructs
+      theory_id: 16479
+    - title: IntelliJ IDEA run configurations
+      theory_id: 10630
     - title: Defining classes
       theory_id: 3618
     - title: Grouping classes with packages

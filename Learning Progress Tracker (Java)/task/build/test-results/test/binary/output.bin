@@ -131,50 +131,4 @@ No input.
 > name surname
 Incorrect credentials.
 > n surname email@email.xyz
-Incorrect first name.
- > 'name surname email@email.xyz
-Incorrect first name.
- > -name surname email@email.xyz
-Incorrect first name.
- > name- surname email@email.xyz
-Incorrect first name.
- > name' surname email@email.xyz
-Incorrect first name.
-!> nam-'e surname email@email.xyz
-Incorrect first name.
-!> na'-me surname email@email.xyz
-Incorrect first name.
-!> na--me surname email@email.xyz
-Incorrect first name.
-!> na''me surname email@email.xyz
-Incorrect first name.
-!> námé surname email@email.xyz
-Incorrect first name.
-> name s email@email.xyz
-Incorrect last name.
- > name -surname email@email.xyz
-Incorrect last name.
- > name 'surname email@email.xyz
-Incorrect last name.
-!> name surnam''e email@email.xyz
-Incorrect last name.
-!> name surn--ame email@email.xyz
-Incorrect last name.
-!> name s'-urname email@email.xyz
-Incorrect last name.
-!> name su-'rname email@email.xyz
-Incorrect last name.
- > name surname- email@email.xyz
-Incorrect last name.
- > name surname' email@email.xyz
-Incorrect last name.
-!> name surnámé email@email.xyz
-Incorrect last name.
-> name surname emailemail.xyz
-Incorrect email.
-> name surname email@emailxyz
-Incorrect email.
- > name surname email@e@mail.xyz
-Incorrect email.
-> back
-"Total 0 students have been added.
+Incorrect credentials.
