@@ -1,0 +1,23 @@
+type: edu
+files:
+  - name: src/collections/Main.java
+    visible: true
+    learner_created: false
+  - name: test/BiMapTests.java
+    visible: false
+    learner_created: false
+  - name: test/Helper.java
+    visible: false
+    learner_created: false
+  - name: test/ImmutabilityTests.java
+    visible: false
+    learner_created: false
+  - name: test/MultisetTests.java
+    visible: false
+    learner_created: false
+  - name: test/QueueTests.java
+    visible: false
+    learner_created: false
+feedback_link: https://hyperskill.org/projects/319/stages/1791/implement#comment
+status: Unchecked
+record: -1
