@@ -9,9 +9,9 @@ files:
   - name: test/ImmutabilityTests.java
     visible: false
     learner_created: false
-feedback_link: https://hyperskill.org/projects/319/stages/1789/implement#comment
+feedback_link: https://hyperskill.org/learn/step/25577#comment
 status: Solved
 feedback:
   message: Congratulations!
   time: "Mon, 17 Feb 2025 13:46:51 UTC"
-record: -1
+record: 1

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="ImmutabilityTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-02-17T13:46:51" hostname="localhost" time="0.061">
+<testsuite name="ImmutabilityTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-02-19T16:09:15" hostname="localhost" time="0.01">
   <properties/>
-  <testcase name="start" classname="ImmutabilityTests" time="0.061"/>
+  <testcase name="start" classname="ImmutabilityTests" time="0.01"/>
   <system-out><![CDATA[?[1;31m
-Start test 1?[0m
+Start test 1 (17)?[0m
 ?[1;31m
-Start test 2?[0m
+Start test 2 (18)?[0m
 ?[1;31m
-Start test 3?[0m
+Start test 3 (19)?[0m
 ?[1;31m
-Start test 4?[0m
+Start test 4 (20)?[0m
 ?[1;31m
-Start test 5?[0m
+Start test 5 (21)?[0m
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

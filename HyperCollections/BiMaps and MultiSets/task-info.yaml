@@ -1,8 +1,5 @@
 type: edu
 files:
-  - name: src/collections/Main.java
-    visible: true
-    learner_created: false
   - name: test/BiMapTests.java
     visible: false
     learner_created: false
@@ -15,6 +12,21 @@ files:
   - name: test/MultisetTests.java
     visible: false
     learner_created: false
-feedback_link: https://hyperskill.org/projects/319/stages/1790/implement#comment
-status: Unchecked
+  - name: src/collections/ImmutableCollection.java
+    visible: true
+    learner_created: true
+  - name: src/collections/BiMap.java
+    visible: true
+    learner_created: true
+  - name: src/collections/TestBiMap.java
+    visible: true
+    learner_created: true
+feedback_link: https://hyperskill.org/learn/step/25578#comment
+status: Failed
+feedback:
+  message: |-
+    Wrong answer in test #1
+
+    Could not create new Multiset&#39;s instance
+  time: "Wed, 19 Feb 2025 16:09:15 UTC"
 record: -1
