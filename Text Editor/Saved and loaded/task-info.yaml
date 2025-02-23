@@ -1,0 +1,14 @@
+type: edu
+files:
+  - name: src/editor/ApplicationRunner.java
+    visible: true
+    learner_created: false
+  - name: src/editor/TextEditor.java
+    visible: true
+    learner_created: false
+  - name: test/EditorTest.java
+    visible: false
+    learner_created: false
+feedback_link: https://hyperskill.org/projects/38/stages/202/implement#comment
+status: Unchecked
+record: -1
