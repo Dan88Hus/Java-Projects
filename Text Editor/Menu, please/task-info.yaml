@@ -10,6 +10,15 @@ files:
   - name: test/EditorTest.java
     visible: false
     learner_created: false
-feedback_link: https://hyperskill.org/projects/38/stages/203/implement#comment
-status: Unchecked
+  - name: SomeFile.txt
+    visible: true
+    learner_created: true
+  - name: AnotherFile.txt
+    visible: true
+    learner_created: true
+feedback_link: https://hyperskill.org/learn/step/5260#comment
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Fri, 28 Feb 2025 14:13:30 UTC"
 record: -1

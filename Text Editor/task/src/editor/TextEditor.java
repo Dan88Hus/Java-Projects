@@ -17,6 +17,12 @@ public class TextEditor extends JFrame {
     private JButton loadButton;
     private JScrollPane scrollPane;
 
+    private JMenuBar menuBar;
+    private JMenu menuFile;
+    private JMenuItem menuLoad;
+    private JMenuItem menuSave;
+    private JMenuItem menuExit;
+
     public TextEditor() {
         setTitle("Simple Text Editor");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -50,7 +56,35 @@ public class TextEditor extends JFrame {
         add(scrollPane, BorderLayout.CENTER);
         add(controlPanel, BorderLayout.SOUTH);
 
+        createMenuBar();
+        
         setVisible(true);
+    }
+
+    private void createMenuBar() {
+        menuBar = new JMenuBar();
+        menuFile = new JMenu("File");
+        menuFile.setName("MenuFile");
+
+        menuLoad = new JMenuItem("Load");
+        menuLoad.setName("MenuLoad");
+        menuLoad.addActionListener(this::loadFile);
+
+        menuSave = new JMenuItem("Save");
+        menuSave.setName("MenuSave");
+        menuSave.addActionListener(this::saveFile);
+
+        menuExit = new JMenuItem("Exit");
+        menuExit.setName("MenuExit");
+        menuExit.addActionListener(e -> dispose());
+
+        menuFile.add(menuLoad);
+        menuFile.add(menuSave);
+        menuFile.add(menuExit);
+        menuBar.add(menuFile);
+
+        setJMenuBar(menuBar);
+
     }
 
     private void loadFile(ActionEvent actionEvent) {

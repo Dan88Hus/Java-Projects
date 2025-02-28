@@ -1,6 +1,7 @@
 import editor.TextEditor;
 import org.assertj.swing.exception.ActionFailedException;
 import org.assertj.swing.fixture.JButtonFixture;
+import org.assertj.swing.fixture.JMenuItemFixture;
 import org.assertj.swing.fixture.JScrollPaneFixture;
 import org.assertj.swing.fixture.JTextComponentFixture;
 import org.hyperskill.hstest.dynamic.DynamicTest;
@@ -11,28 +12,24 @@ import org.junit.After;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.hyperskill.hstest.testcase.CheckResult.correct;
-import static org.hyperskill.hstest.testcase.CheckResult.wrong;
 
 public class EditorTest extends SwingTest {
     public EditorTest() {
         super(new TextEditor());
-        System.setProperty("user.dir", System.getProperty("user.dir").replaceAll("\\\\Text Editor\\\\task", ""));
     }
 
-    @SwingComponent
-    private JTextComponentFixture textArea;
-    @SwingComponent
-    private JTextComponentFixture filenameField;
-    @SwingComponent
-    private JButtonFixture saveButton;
-    @SwingComponent
-    private JButtonFixture loadButton;
-    @SwingComponent
-    private JScrollPaneFixture scrollPane;
+    @SwingComponent private JTextComponentFixture textArea;
+    @SwingComponent private JTextComponentFixture filenameField;
+    @SwingComponent private JButtonFixture saveButton;
+    @SwingComponent private JButtonFixture loadButton;
+    @SwingComponent private JScrollPaneFixture scrollPane;
+    @SwingComponent private JMenuItemFixture menuFile;
+    @SwingComponent private JMenuItemFixture menuLoad;
+    @SwingComponent private JMenuItemFixture menuSave;
+    @SwingComponent private JMenuItemFixture menuExit;
 
     String filename1 = "SomeFile.txt";
     String filename2 = "AnotherFile.txt";
@@ -40,42 +37,42 @@ public class EditorTest extends SwingTest {
 
     String textToSave1 = "Basic text editor\nType here too\nHere also\n\n";
     String textToSave2 = "                Sonnet I\n" +
-            "     \n" +
-            "     \n" +
-            "FROM fairest creatures we desire increase,\n" +
-            "That thereby beauty's rose might never die,\n" +
-            "But as the riper should by time decease,\n" +
-            "His tender heir might bear his memory:\n" +
-            "But thou, contracted to thine own bright eyes,\n" +
-            "Feed'st thy light'st flame with self-substantial fuel,\n" +
-            "Making a famine where abundance lies,\n" +
-            "Thyself thy foe, to thy sweet self too cruel.\n" +
-            "Thou that art now the world's fresh ornament\n" +
-            "And only herald to the gaudy spring,\n" +
-            "Within thine own bud buriest thy content\n" +
-            "And, tender churl, makest waste in niggarding.\n" +
-            "Pity the world, or else this glutton be,\n" +
-            "To eat the world's due, by the grave and thee.\n" +
-            "\n" +
-            "                 Sonnet II                   \n" +
-            "\n" +
-            "\n" +
-            "When forty winters shall beseige thy brow,\n" +
-            "And dig deep trenches in thy beauty's field,\n" +
-            "Thy youth's proud livery, so gazed on now,\n" +
-            "Will be a tatter'd weed, of small worth held:\n" +
-            "Then being ask'd where all thy beauty lies,\n" +
-            "Where all the treasure of thy lusty days,\n" +
-            "To say, within thine own deep-sunken eyes,\n" +
-            "Were an all-eating shame and thriftless praise.\n" +
-            "How much more praise deserved thy beauty's use,\n" +
-            "If thou couldst answer 'This fair child of mine\n" +
-            "Shall sum my count and make my old excuse,'\n" +
-            "Proving his beauty by succession thine!\n" +
-            "This were to be new made when thou art old,\n" +
-            "And see thy blood warm when thou feel'st it cold.";
+        "     \n" +
+        "     \n" +
+        "FROM fairest creatures we desire increase,\n" +
+        "That thereby beauty's rose might never die,\n" +
+        "But as the riper should by time decease,\n" +
+        "His tender heir might bear his memory:\n" +
+        "But thou, contracted to thine own bright eyes,\n" +
+        "Feed'st thy light'st flame with self-substantial fuel,\n" +
+        "Making a famine where abundance lies,\n" +
+        "Thyself thy foe, to thy sweet self too cruel.\n" +
+        "Thou that art now the world's fresh ornament\n" +
+        "And only herald to the gaudy spring,\n" +
+        "Within thine own bud buriest thy content\n" +
+        "And, tender churl, makest waste in niggarding.\n" +
+        "Pity the world, or else this glutton be,\n" +
+        "To eat the world's due, by the grave and thee.\n" +
+        "\n" +
+        "                 Sonnet II                   \n" +
+        "\n" +
+        "\n" +
+        "When forty winters shall beseige thy brow,\n" +
+        "And dig deep trenches in thy beauty's field,\n" +
+        "Thy youth's proud livery, so gazed on now,\n" +
+        "Will be a tatter'd weed, of small worth held:\n" +
+        "Then being ask'd where all thy beauty lies,\n" +
+        "Where all the treasure of thy lusty days,\n" +
+        "To say, within thine own deep-sunken eyes,\n" +
+        "Were an all-eating shame and thriftless praise.\n" +
+        "How much more praise deserved thy beauty's use,\n" +
+        "If thou couldst answer 'This fair child of mine\n" +
+        "Shall sum my count and make my old excuse,'\n" +
+        "Proving his beauty by succession thine!\n" +
+        "This were to be new made when thou art old,\n" +
+        "And see thy blood warm when thou feel'st it cold.";
 
-    @DynamicTest()
+    @DynamicTest
     CheckResult test1() {
         requireEditable(textArea);
         requireEmpty(textArea, filenameField);
@@ -103,7 +100,7 @@ public class EditorTest extends SwingTest {
     }
 
     @DynamicTest(feedback = "Text in FilenameField and in TextArea " +
-            "should stay the same after saving file")
+        "should stay the same after saving file")
     CheckResult test4() {
         filenameField.setText(filename1);
         textArea.setText(textToSave1);
@@ -116,19 +113,12 @@ public class EditorTest extends SwingTest {
     }
 
     @DynamicTest(feedback = "Text in FilenameField and in TextArea " +
-            "should stay the same after saving file")
+        "should stay the same after saving file")
     CheckResult test5() {
         String text = textToSave2;
         String file = filename2;
 
-
-        try {
-            filenameField.setText(file);
-        }
-        catch (Exception e) {
-            return CheckResult.wrong("Could not focus a field. Make sure you don't have any intermediate windows waiting for an action");
-        }
-
+        filenameField.setText(file);
         textArea.setText(text);
 
         saveButton.click();
@@ -136,41 +126,25 @@ public class EditorTest extends SwingTest {
         filenameField.requireText(file);
         textArea.requireText(text);
 
-        try {
-            filenameField.setText("");
-            textArea.setText("");
-            return correct();
-        }
-        catch (Exception e) {
-            return CheckResult.wrong("Could not pass one of the stages. Make sure you don't have any intermediate windows waiting for an action");
-        }
+        filenameField.setText("");
+        textArea.setText("");
+        return correct();
     }
 
     @DynamicTest(feedback = "Text in FilenameField stay the same after loading file")
     CheckResult test6() {
         String file = filename1;
 
-        try {
-            filenameField.setText(file);
-        }
-        catch (Exception e) {
-            return CheckResult.wrong("Could not focus a field. Make sure you don't have any intermediate windows waiting for an action");
-        }
-
+        filenameField.setText(file);
         textArea.setText("");
 
         loadButton.click();
 
         filenameField.requireText(file);
 
-        try {
-            filenameField.setText("");
-            textArea.setText("");
-            return correct();
-        }
-        catch (Exception e) {
-            return CheckResult.wrong("Could not pass one of the stages. Make sure you don't have any intermediate windows waiting for an action");
-        }
+        filenameField.setText("");
+        textArea.setText("");
+        return correct();
     }
 
     @DynamicTest(feedback = "Text should be the same after saving and loading same file")
@@ -183,12 +157,7 @@ public class EditorTest extends SwingTest {
             String text = texts[i];
             String file = files[i];
 
-            try {
-                filenameField.setText("");
-            }
-            catch (Exception e) {
-                return CheckResult.wrong("Could not focus a field. Make sure you don't have any intermediate windows waiting for an action");
-            }
+            filenameField.setText("");
             textArea.setText("");
 
             filenameField.setText(file);
@@ -196,13 +165,8 @@ public class EditorTest extends SwingTest {
 
             saveButton.click();
 
-            try {
-                filenameField.setText("");
-                textArea.setText("");
-            }
-            catch (Exception e) {
-                return CheckResult.wrong("Could not pass one of the stages. Make sure you don't have any intermediate windows waiting for an action");
-            }
+            filenameField.setText("");
+            textArea.setText("");
 
             filenameField.setText(file);
             loadButton.click();
@@ -213,7 +177,7 @@ public class EditorTest extends SwingTest {
     }
 
     @DynamicTest(feedback = "TextArea should be empty if user tries to " +
-            "load file that doesn't exist")
+        "load file that doesn't exist")
     CheckResult test8() {
         textArea.setText(textToSave1);
         filenameField.setText(noExistFile);
@@ -225,24 +189,126 @@ public class EditorTest extends SwingTest {
 
     @DynamicTest(feedback = "TextArea should correctly save and load an empty file")
     CheckResult test9() {
-        try {
-            textArea.setText("");
-        } catch (ActionFailedException e) {
-            return CheckResult.wrong("Can't focus on a TextArea, most likely there is an unexpected blocking pop-up " +
-                    "window after testing the case with a non-existent file.");
-        }
+        textArea.setText("");
         filenameField.setText(filename1);
 
         saveButton.click();
+        textArea.setText(textToSave2);
+        loadButton.click();
+        textArea.requireText("");
+        return correct();
+    }
+
+    // menu-related tests
+
+    @DynamicTest
+    CheckResult test10() {
+        requireEnabled(menuLoad, menuSave, menuFile, menuExit);
+        return correct();
+    }
+
+    @DynamicTest(feedback = "Text in FilenameField and in TextArea " +
+        "should stay the same after saving file using MenuSave")
+    CheckResult test11() {
+        filenameField.setText(filename1);
+        textArea.setText(textToSave1);
 
         try {
-            textArea.setText(textToSave2);
-        }
-        catch (Exception e) {
-            return CheckResult.wrong("Could not pass one of the stages. Make sure you don't have any intermediate windows waiting for an action");
+            menuSave.click();
+        } catch (ActionFailedException e) {
+            return CheckResult.wrong("Make sure that the JMenu and it's respective JMenuItem are present and clickable.");
         }
 
-        loadButton.click();
+        filenameField.requireText(filename1);
+        textArea.requireText(textToSave1);
+        return correct();
+    }
+
+    @DynamicTest(feedback = "Text in FilenameField and in TextArea " +
+        "should stay the same after saving file using MenuSave")
+    CheckResult test12() {
+        String text = textToSave2;
+        String file = filename2;
+
+        filenameField.setText(file);
+        textArea.setText(text);
+
+        menuSave.click();
+
+        filenameField.requireText(file);
+        textArea.requireText(text);
+
+        filenameField.setText("");
+        textArea.setText("");
+        return correct();
+    }
+
+    @DynamicTest(feedback = "Text in FilenameField stay " +
+        "the same after loading file using MenuLoad")
+    CheckResult test13() {
+        String file = filename1;
+
+        filenameField.setText(file);
+        textArea.setText("");
+
+        menuLoad.click();
+
+        filenameField.requireText(file);
+
+        filenameField.setText("");
+        textArea.setText("");
+        return correct();
+    }
+
+    @DynamicTest(feedback = "Text should be the same after saving " +
+        "and loading same file using MenuLoad")
+    CheckResult test14() {
+        String[] texts = {textToSave2, textToSave1};
+        String[] files = {filename1, filename2};
+
+        for (int i = 0; i < 2; i++) {
+
+            String text = texts[i];
+            String file = files[i];
+
+            filenameField.setText("");
+            textArea.setText("");
+
+            filenameField.setText(file);
+            textArea.setText(text);
+
+            menuSave.click();
+
+            filenameField.setText("");
+            textArea.setText("");
+
+            filenameField.setText(file);
+            menuLoad.click();
+
+            textArea.requireText(text);
+        }
+        return correct();
+    }
+
+    @DynamicTest(feedback = "TextArea should be empty if user tries to " +
+        "load file that doesn't exist using MenuLoad")
+    CheckResult test15() {
+        textArea.setText(textToSave1);
+        filenameField.setText(noExistFile);
+
+        menuLoad.click();
+        textArea.requireText("");
+        return correct();
+    }
+
+    @DynamicTest(feedback = "TextArea should correctly save and load an empty file using menu")
+    CheckResult test16() {
+        textArea.setText("");
+        filenameField.setText(filename1);
+
+        menuSave.click();
+        textArea.setText(textToSave2);
+        menuLoad.click();
         textArea.requireText("");
         return correct();
     }
@@ -250,15 +316,10 @@ public class EditorTest extends SwingTest {
     @After
     public void deleteFiles() {
         try {
-            Path path1 = Paths.get(filename1);
-            Path path2 = Paths.get(filename2);
-            if(Files.exists(path1)) {
-                Files.delete(Paths.get(filename1));
-            }
-            if(Files.exists(path2)) {
-                Files.delete(Paths.get(filename2));
-            }
-        } catch (IOException ex) {
+            Files.delete(Paths.get(filename1));
+            Files.delete(Paths.get(filename2));
+        }
+        catch (IOException ex) {
             ex.printStackTrace();
         }
     }
