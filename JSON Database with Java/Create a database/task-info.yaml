@@ -9,9 +9,18 @@ files:
   - name: test/JsonDatabaseTest.java
     visible: false
     learner_created: false
-  - name: src/server/ClientHandler.java
-    visible: true
-    learner_created: true
-feedback_link: https://hyperskill.org/projects/65/stages/348/implement#comment
-status: Unchecked
+feedback_link: https://hyperskill.org/learn/step/5490#comment
+status: Failed
+feedback:
+  message: |-
+    Error in test #1
+
+    In this test, the program is running for a long time, more than 15 seconds. Most likely, the program has gone into an infinite loop.
+
+    Please find below the output of your program during this failed test.
+
+    ---
+
+    Server is running...
+  time: "Fri, 07 Mar 2025 13:06:36 UTC"
 record: -1
