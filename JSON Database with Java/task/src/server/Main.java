@@ -42,22 +42,38 @@ public class Main {
                 while ((command = in.readLine()) != null) {
                     String response = processCommand(command);
                     out.println(response);
+                    if (command.equals("exit")) {
+                        break; // Exit the loop if the client sends "exit"
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    clientSocket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
         private String processCommand(String command) {
+            if (command == null || command.isEmpty()) {
+                return "ERROR";
+            }
+
             String[] parts = command.split(" ", 3);
             String action = parts[0];
 
             switch (action) {
                 case "set":
+                    if (parts.length < 3) return "ERROR"; // Ensure enough arguments
                     return set(parts[1], parts[2]);
                 case "get":
+                    if (parts.length < 2) return "ERROR"; // Ensure enough arguments
                     return get(parts[1]);
                 case "delete":
+                    if (parts.length < 2) return "ERROR"; // Ensure enough arguments
                     return delete(parts[1]);
                 case "exit":
                     return "Goodbye!";

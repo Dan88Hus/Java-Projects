@@ -10,17 +10,8 @@ files:
     visible: false
     learner_created: false
 feedback_link: https://hyperskill.org/learn/step/5490#comment
-status: Failed
+status: Solved
 feedback:
-  message: |-
-    Error in test #1
-
-    In this test, the program is running for a long time, more than 15 seconds. Most likely, the program has gone into an infinite loop.
-
-    Please find below the output of your program during this failed test.
-
-    ---
-
-    Server is running...
-  time: "Fri, 07 Mar 2025 13:06:36 UTC"
+  message: Congratulations!
+  time: "Fri, 07 Mar 2025 13:56:32 UTC"
 record: -1
