@@ -9,6 +9,12 @@ files:
   - name: test/JsonDatabaseTest.java
     visible: false
     learner_created: false
+  - name: src/Readme.md
+    visible: true
+    learner_created: true
 feedback_link: https://hyperskill.org/learn/step/5492#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Sat, 08 Mar 2025 11:59:19 UTC"
 record: -1

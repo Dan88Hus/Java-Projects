@@ -1,28 +1,46 @@
 package client;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
 public class Main {
+    @Parameter(names = "-t", description = "Type of request (get, set, delete, exit)", required = true)
+    private String type;
+
+    @Parameter(names = "-i", description = "Index of the cell", required = false)
+    private Integer index;
+
+    @Parameter(names = "-m", description = "Message to store (only for set)", required = false)
+    private String message;
+
     public static void main(String[] args) {
-        String host = "localhost"; // Server address
-        int port = 12345; // Same port as the server
-        try (Socket socket = new Socket(host, port);
+        Main client = new Main();
+        JCommander.newBuilder().addObject(client).build().parse(args);
+        client.run();
+    }
+
+    private void run() {
+        try (Socket socket = new Socket("localhost", 12345);
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-//            System.out.println("Client connected to server!");
+
+            StringBuilder command = new StringBuilder(type);
+            if (index != null) command.append(" ").append(index);
+            if (message != null) command.append(" ").append(message);
+
             System.out.println("Client started!");
-            int N = 12; // You can choose any integer number
-            String message = "Give me a record # " + N;
-            //Send message to the server
-            out.println(message);
-            System.out.println("Sent: " + message);
-            //Receive response from the server
+            System.out.println("Sent: " + command);
+            out.println(command.toString());
+
             String response = in.readLine();
             System.out.println("Received: " + response);
+
         } catch (IOException e) {
-            System.err.println("Error connecting to server: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

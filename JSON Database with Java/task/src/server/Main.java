@@ -9,50 +9,101 @@ import java.net.Socket;
 import java.util.Arrays;
 
 public class Main {
-    private static final int PORT = 12345;
+    private static final int SIZE = 1000;
+    private static final String[] database = new String[SIZE];
 
     public static void main(String[] args) {
 
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-//            System.out.println("Server started on port " + PORT);
+        for (int i = 0; i < SIZE; i++) {
+            database[i] = "";
+        }
+        try (ServerSocket serverSocket = new ServerSocket(12345)) {
             System.out.println("Server started!");
 
             while (true) {
-                try {
-                    Socket clientSocket = serverSocket.accept(); // Accept new client
-//                    System.out.println("New client connected!");
-                    handleClient(clientSocket); // Handle client in a separate thread
+                try (Socket clientSocket = serverSocket.accept();
+                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                     PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
+
+                    String command = in.readLine();
+                    System.out.println("Received: " + command);
+                    String response = processCommand(command);
+                    out.println(response);
+
+                    if ("exit".equals(command)) {
+                        System.out.println("Shutting down server...");
+                        break;
+                    }
                 } catch (IOException e) {
-                    System.err.println("Error accepting client connection: " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
         } catch (IOException e) {
-            System.err.println("Could not start server on port: " + PORT);
-            System.exit(-1);
+            e.printStackTrace();
         }
+
     }
 
-    private static void handleClient (Socket clientSocket){
+    private static String processCommand (String command) {
 
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
-
-            //Receive the client's message
-            String message = in.readLine();
-
-            if (message != null && message.contains("#")) {
-                System.out.println("Received: " + message);
-                // Correctly format and send response
-                String response = "A record " + message.split("#")[1].trim() + " was sent!";
-                out.println(response);
-                System.out.println("Sent: " + response);
-            } else {
-                out.println("Invalid request!");
-            }
-        } catch (IOException e) {
-            System.err.println("Error handling client: " + e.getMessage());
+        if (command == null || command.isEmpty()) {
+            return "ERROR";
         }
+
+        String[] parts = command.split(" ", 3);
+        String action = parts[0];
+
+        switch (action) {
+            case "set":
+                if (parts.length < 3) return "ERROR";
+                return set(parts[1], parts[2]);
+            case "get":
+                if (parts.length < 2) return "ERROR";
+                return get(parts[1]);
+            case "delete":
+                if (parts.length < 2) return "ERROR";
+                return delete(parts[1]);
+            case "exit":
+                return "OK";
+            default:
+                return "ERROR";
+        }
+
     }
+
+    private static String get(String indexStr) {
+        int index = parseIndex(indexStr);
+        if (index < 0 || database[index].isEmpty()) return "ERROR";
+        return database[index];
+    }
+
+    private static String set(String indexStr, String text) {
+        int index = parseIndex(indexStr);
+        if (index < 0) return "ERROR";
+        database[index] = text;
+        return "OK";
+
+    }
+
+    private static String delete(String indexStr) {
+        int index = parseIndex(indexStr);
+        if (index < 0) return "ERROR";
+        database[index] = "";
+        return "OK";
+    }
+
+
+    private static int parseIndex(String indexStr) {
+        try {
+            int index = Integer.parseInt(indexStr) - 1;
+            if (index < 0 || index >= SIZE) return -1;
+            return index;
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+        
+    }
+
 }
 
 
