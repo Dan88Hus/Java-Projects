@@ -1,5 +1,8 @@
 package server;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,16 +10,15 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Main {
-    private static final int SIZE = 1000;
-    private static final String[] database = new String[SIZE];
+    private static final Map<String, String> database = new HashMap<>();
+    private static final Gson gson = new Gson();
 
     public static void main(String[] args) {
 
-        for (int i = 0; i < SIZE; i++) {
-            database[i] = "";
-        }
         try (ServerSocket serverSocket = new ServerSocket(12345)) {
             System.out.println("Server started!");
 
@@ -25,12 +27,17 @@ public class Main {
                      BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                      PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
 
-                    String command = in.readLine();
-                    System.out.println("Received: " + command);
-                    String response = processCommand(command);
-                    out.println(response);
+                    String requestJson = in.readLine();
+                    System.out.println("Received: " + requestJson);
 
-                    if ("exit".equals(command)) {
+
+                    JsonObject request = gson.fromJson(requestJson, JsonObject.class);
+                    JsonObject response = processRequest(request);
+
+                    String responseJson = gson.toJson(response);
+                    out.println(responseJson);
+
+                    if ("exit".equals(request.get("type").getAsString())) {
                         System.out.println("Shutting down server...");
                         break;
                     }
@@ -44,66 +51,45 @@ public class Main {
 
     }
 
-    private static String processCommand (String command) {
+    private static JsonObject processRequest (JsonObject request) {
 
-        if (command == null || command.isEmpty()) {
-            return "ERROR";
-        }
+        String type = request.get("type").getAsString();
+        JsonObject response = new JsonObject();
 
-        String[] parts = command.split(" ", 3);
-        String action = parts[0];
-
-        switch (action) {
+        switch (type) {
             case "set":
-                if (parts.length < 3) return "ERROR";
-                return set(parts[1], parts[2]);
+                database.put(request.get("key").getAsString(), request.get("value").getAsString());
+                response.addProperty("response", "OK");
+                break;
             case "get":
-                if (parts.length < 2) return "ERROR";
-                return get(parts[1]);
+                String key = request.get("key").getAsString();
+                if (database.containsKey(key)) {
+                    response.addProperty("response", "OK");
+                    response.addProperty("value", database.get(key));
+                } else {
+                    response.addProperty("response", "ERROR");
+                    response.addProperty("reason", "No such key");
+                }
+                break;
             case "delete":
-                if (parts.length < 2) return "ERROR";
-                return delete(parts[1]);
+                key = request.get("key").getAsString();
+                if (database.containsKey(key)) {
+                    database.remove(key);
+                    response.addProperty("response", "OK");
+                } else {
+                    response.addProperty("response", "ERROR");
+                    response.addProperty("reason", "No such key");
+                }
+                break;
             case "exit":
-                return "OK";
+                response.addProperty("response", "OK");
+                break;
             default:
-                return "ERROR";
+                response.addProperty("response", "ERROR");
+                response.addProperty("reason", "Invalid request");
         }
-
+        return response;
     }
-
-    private static String get(String indexStr) {
-        int index = parseIndex(indexStr);
-        if (index < 0 || database[index].isEmpty()) return "ERROR";
-        return database[index];
-    }
-
-    private static String set(String indexStr, String text) {
-        int index = parseIndex(indexStr);
-        if (index < 0) return "ERROR";
-        database[index] = text;
-        return "OK";
-
-    }
-
-    private static String delete(String indexStr) {
-        int index = parseIndex(indexStr);
-        if (index < 0) return "ERROR";
-        database[index] = "";
-        return "OK";
-    }
-
-
-    private static int parseIndex(String indexStr) {
-        try {
-            int index = Integer.parseInt(indexStr) - 1;
-            if (index < 0 || index >= SIZE) return -1;
-            return index;
-        } catch (NumberFormatException e) {
-            return -1;
-        }
-        
-    }
-
 }
 
 

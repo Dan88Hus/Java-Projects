@@ -13,8 +13,12 @@ files:
     visible: true
     learner_created: true
 feedback_link: https://hyperskill.org/learn/step/5492#comment
-status: Solved
+status: Failed
 feedback:
-  message: Congratulations!
-  time: "Sat, 08 Mar 2025 11:59:19 UTC"
-record: -1
+  message: "Exception in test #1\n\ncom.beust.jcommander.ParameterException: The following\
+    \ option is required: [-k]\n\tat com.beust.jcommander.JCommander.validateOptions(JCommander.java:388)\n\
+    \tat com.beust.jcommander.JCommander.parse(JCommander.java:357)\n\tat com.beust.jcommander.JCommander.parse(JCommander.java:335)\n\
+    \tat client.Main.main(Main.java:25)\n\nPlease find below the output of your program\
+    \ during this failed test.\n\n---\n\nArguments for Main: -t exit\n\nServer started!"
+  time: "Sat, 08 Mar 2025 12:57:42 UTC"
+record: 3
