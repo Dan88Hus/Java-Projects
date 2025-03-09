@@ -1,62 +1,96 @@
-Connect it to a server
-Theory
+In this stage, you will need to improve your client and server by adding the ability to work with files. The server should store (persist) the database as a file on the hard drive, updating it only when setting a new value or deleting one. This functionality is crucial for maintaining data persistence and ensuring that the database state is saved even if the server is restarted.
 
-Usually, remote databases are accessed through the internet. In this project, the database will be on your computer, but it will still be run as a separate program (we'll call it the server). The client who wants to get, create, or delete some information is a separate program too.
+To handle multiple requests efficiently, you will parallelize the server's work using executors. Each request will be parsed and handled in a separate executor's task, allowing the server to process multiple requests simultaneously. This improvement will significantly enhance the server's performance and scalability, making it capable of handling a higher load.
 
-We will be using a socket to connect to the database (server). A socket is an interface to send and receive data between different processes. These processes can be on the same computer or different computers connected through the internet.
+Implementing synchronization is essential to maintain the integrity of the database when multiple threads access the same file. By using the ReentrantReadWriteLock class, you can allow multiple threads to read the file concurrently while ensuring that only one thread can write to the file at a time. This will prevent data corruption and ensure consistent access to the database.
 
-To connect to the server, the client must know its address, which consists of two parts: IP address and port. The local address of your computer is always "127.0.0.1". The port can be any number between 0 and 65535, but preferably greater than 1024 to avoid conflicts with well-known ports used by system processes.
+Additionally, you will implement the ability for the client to read a request from a file. If the -in argument is followed by a file name, the client should read the request from that file. The file will be stored in the /client/data directory. This feature allows the client to directly send pre-formatted JSON requests to the server, bypassing the need to first convert command-line arguments into JSON format and then send that JSON to the server.
 
-Let's take a look at this client-side code:
+One significant advantage of this feature is that it will allow us to store not just strings but also complex JSON objects as values in the future. Writing complex JSON objects directly on the command line can be tedious and error-prone. By using pre-formatted JSON files, we can easily manage and send complex data structures to the server.
 
-String address = "127.0.0.1";
-int port = 23456;
-Socket socket = new Socket(InetAddress.getByName(address), port);
-DataInputStream input = new DataInputStream(socket.getInputStream());
-DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+Here are the examples of the input file contents:
 
-The client created a new socket, which means that the client tried to connect to the server. Successful creation of a socket means that the client found the server and managed to connect to it.
+{"type":"set","key":"name","value":"Sorabh"}
 
-After that, you can see the creation of DataInputStream and DataOutputStream objects. These are the input and output streams to the server, respectively. If you expect data from the server, you need to write input.readUTF(). This returns the String object that the server sent to the client. If you want to send data to the server, you need to write output.writeUTF(stringText), and this message will be sent to the server.
+{"type":"get","key":"name"}
 
-Now let's look at the server-side code:
+{"type":"delete","key":"name"}
 
-String address = "127.0.0.1";
-int port = 23456;
-ServerSocket server = new ServerSocket(port, 50, InetAddress.getByName(address));
-Socket socket = server.accept();
-DataInputStream input = new DataInputStream(socket.getInputStream());
-DataOutputStream output  = new DataOutputStream(socket.getOutputStream());
+For reading client requests from a file, you can get the path using:
 
-The server created a ServerSocket object that waits for client connections. When a client connects, the method server.accept() returns the Socket connection to this client.
+path = System.getProperty("user.dir") + "/src/client/data/" + fileName;
 
-After that, you can see the creation of DataInputStream and DataOutputStream objects. These are the input stream from and output stream to this client, respectively, now from the server side. To receive data from the client, write input.readUTF(). To send data to the client, write output.writeUTF(stringText). The server should stop after responding to the client.
-Description
+Note that like in the previous stage, you should store the database as a JSON object. The keys and values should both be strings.
 
-In this stage, you will implement the simplest connection between one server and one client. The client should send the server a message: something along the lines of Give me a record # N, where N is an arbitrary integer number. The server should reply A record # N was sent! to the client. Both the client and the server should print the received messages to the console.
+Example of the contents of a JSON database file:
 
-Note: In this stage, we are focusing solely on establishing communication between the client and server using sockets, and printing the exchanged messages. We are not yet performing actual database operations (get, set, delete), like we did in the previous stage.
+{
+"key1": "some string value",
+"key2": "another string value",
+"key3": "yet another string value"
+}
+
+For working with database file, you can get the path using:
+
+path = System.getProperty("user.dir") + "/src/server/data/db.json";
+
 Objectives
 
-    Implement a server that waits for a client connection and responds to a specific message.
-    Implement a client that connects to the server and sends a specific message.
-    Ensure both the client and the server print the received messages to the console.
+    Persist the Database: The server should store the database on the hard drive in a db.json file, located in the /server/data folder. The database should be updated only after setting a new value or deleting an existing one.
 
-Important: Before a client connects to the server, the server output should be: Server started!. Similarly, after the client connects to the server, the client should print Client started!.
+    Parallelize Request Handling: The server should handle multiple requests simultaneously by using executors. Each request should be processed in a separate task, while the main thread waits for incoming requests.
 
-Note: The server and the client are different programs that run separately. Your server should run from the main method of the Main class in the /server package, and the client should run from the main method of the Main class in the /client package. To test your program, you should run the server first so a client can connect to the server.
+    Implement Synchronization: Ensure that multiple threads can read the database file concurrently, but only one thread can write to the file at a time. This will prevent data corruption and ensure consistent access to the database.
+
+    Read Requests from a File: The client should be able to read a request from a file if the -in argument is followed by a file name. The file will be stored in the /client/data directory.
+
 Example
 
-The server should output something like this:
+The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
 
+Starting the server:
+
+> java Main
 Server started!
-Received: Give me a record # 12
-Sent: A record # 12 was sent!
 
-The client should output something like this:
+Starting the clients:
 
+> java Main -t get -k name
 Client started!
-Sent: Give me a record # 12
-Received: A record # 12 was sent!
+Sent: {"type":"get","key":"name"}
+Received: {"response":"ERROR","reason":"No such key"}
 
-Note: Here, number 12 in the examples was chosen arbitrarily. You can use any integer number of your liking.
+> java Main -t set -k name -v "Sorabh Tomar"
+Client started!
+Sent: {"type":"set","key":"name","value":"Sorabh Tomar"}
+Received: {"response":"OK"}
+
+> java Main -t set -k name -v Sorabh
+Client started!
+Sent: {"type":"set","key":"name","value":"Sorabh"}
+Received: {"response":"OK"}
+
+> java Main -t get -k name
+Client started!
+Sent: {"type":"get","key":"name"}
+Received: {"response":"OK","value":"Sorabh"}
+
+> java Main -in testSet.json
+Client started!
+Sent: {"type":"set","key":"name","value":"Sorabh"}
+Received: {"response":"OK"}
+
+> java Main -in testGet.json
+Client started!
+Sent: {"type":"get","key":"name"}
+Received: {"response":"OK","value":"Sorabh"}
+
+> java Main -in testDelete.json
+Client started!
+Sent: {"type":"delete","key":"name"}
+Received: {"response":"OK"}
+
+> java Main -t exit
+Client started!
+Sent: {"type":"exit"}
+Received: {"response":"OK"}

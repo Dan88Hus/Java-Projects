@@ -7,6 +7,8 @@ import com.google.gson.JsonObject;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Main {
@@ -18,24 +20,37 @@ public class Main {
 
     @Parameter(names = "-v", description = "Value (only for set request)")
     private String value;
+
+    @Parameter(names = "-in", description = "Input file containing request")
+    private String inputFile;
+
     private static final Gson gson = new Gson();
+    private static final String SERVER_ADDRESS = "localhost";
+    private static final int SERVER_PORT = 12345;
 
     public static void main(String[] args) {
         Main client = new Main();
         JCommander.newBuilder().addObject(client).build().parse(args);
-        client.run();
+        new Thread(client::run).start();
     }
 
     private void run() {
-        try (Socket socket = new Socket("localhost", 12345);
+        try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 
-            JsonObject request = new JsonObject();
-            request.addProperty("type", type);
-            request.addProperty("key", key);
-            if ("set".equals(type) && value != null) {
-                request.addProperty("value", value);
+            JsonObject request;
+            if (inputFile != null) {
+                String filePath = System.getProperty("user.dir") + "/src/client/data/" + inputFile;
+                String fileContent = new String(Files.readAllBytes(Paths.get(filePath)));
+                request = gson.fromJson(fileContent, JsonObject.class);
+            } else {
+                request = new JsonObject();
+                request.addProperty("type", type);
+                request.addProperty("key", key);
+                if ("set".equals(type) && value != null) {
+                    request.addProperty("value", value);
+                }
             }
 
             String requestJson = gson.toJson(request);
