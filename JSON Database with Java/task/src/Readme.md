@@ -1,48 +1,67 @@
-In this stage, you will need to improve your client and server by adding the ability to work with files. The server should store (persist) the database as a file on the hard drive, updating it only when setting a new value or deleting one. This functionality is crucial for maintaining data persistence and ensuring that the database state is saved even if the server is restarted.
+In this stage, you will enhance your database to store not just strings but any JSON types, including objects, arrays, numbers as values. This improvement will allow for more complex and nested data structures within the database.
 
-To handle multiple requests efficiently, you will parallelize the server's work using executors. Each request will be parsed and handled in a separate executor's task, allowing the server to process multiple requests simultaneously. This improvement will significantly enhance the server's performance and scalability, making it capable of handling a higher load.
-
-Implementing synchronization is essential to maintain the integrity of the database when multiple threads access the same file. By using the ReentrantReadWriteLock class, you can allow multiple threads to read the file concurrently while ensuring that only one thread can write to the file at a time. This will prevent data corruption and ensure consistent access to the database.
-
-Additionally, you will implement the ability for the client to read a request from a file. If the -in argument is followed by a file name, the client should read the request from that file. The file will be stored in the /client/data directory. This feature allows the client to directly send pre-formatted JSON requests to the server, bypassing the need to first convert command-line arguments into JSON format and then send that JSON to the server.
-
-One significant advantage of this feature is that it will allow us to store not just strings but also complex JSON objects as values in the future. Writing complex JSON objects directly on the command line can be tedious and error-prone. By using pre-formatted JSON files, we can easily manage and send complex data structures to the server.
-
-Here are the examples of the input file contents:
-
-{"type":"set","key":"name","value":"Sorabh"}
-
-{"type":"get","key":"name"}
-
-{"type":"delete","key":"name"}
-
-For reading client requests from a file, you can get the path using:
-
-path = System.getProperty("user.dir") + "/src/client/data/" + fileName;
-
-Note that like in the previous stage, you should store the database as a JSON object. The keys and values should both be strings.
-
-Example of the contents of a JSON database file:
+Similarly, the key should not just be a single string as it was in the previous stage. The key should instead be in the form of an array, because now the user needs to be able to retrieve specific parts of the JSON value. For example, consider the following JSON structure, where the user wants to get only the surname of person:
 
 {
-"key1": "some string value",
-"key2": "another string value",
-"key3": "yet another string value"
+... ,
+
+    "person": {
+        "name": "Adam",
+        "surname": "Smith"
+    }
+    ...
 }
 
-For working with database file, you can get the path using:
+To retrieve only the surname of the person, the user should provide the full path to this field in the form of a JSON array: ["person", "surname"]. If the user wants to get the full person object, they should provide ["person"].
 
-path = System.getProperty("user.dir") + "/src/server/data/db.json";
+The user should also be able to set value against different keys inside JSON objects. For example, it should be possible to set only the surname using the key ["person", "surname"] and any value against a key, including another JSON object.
+
+Moreover, the user should be able to add new values inside other JSON objects. For example, using the key ["person", "age"] and the value 25, the person object should look like this:
+
+{
+... ,
+
+    "person": {
+        "name": "Adam",
+        "surname": "Smith",
+        "age": 25
+
+    }
+    ...
+}
+
+If there are no root objects, the server should create them. For example, if the database does not have a "person1" key but the user sets the value {"id1": 12, "id2": 14} for the key ["person1", "inside1", "inside2"], then the database will have the following structure:
+
+{
+... ,
+"person1": {
+"inside1": {
+"inside2" : {
+"id1": 12,
+"id2": 14
+}
+}
+},
+...
+}
+
+The deletion of objects should follow the same rules. If a user deletes the object above by the key ["person1", "inside1", "inside2"], then only "inside2" should be deleted, not "inside1" or "person1". See the example below:
+
+{
+... ,
+"person1": {
+"inside1": { }
+}
+
+    ...
+}
 
 Objectives
 
-    Persist the Database: The server should store the database on the hard drive in a db.json file, located in the /server/data folder. The database should be updated only after setting a new value or deleting an existing one.
-
-    Parallelize Request Handling: The server should handle multiple requests simultaneously by using executors. Each request should be processed in a separate task, while the main thread waits for incoming requests.
-
-    Implement Synchronization: Ensure that multiple threads can read the database file concurrently, but only one thread can write to the file at a time. This will prevent data corruption and ensure consistent access to the database.
-
-    Read Requests from a File: The client should be able to read a request from a file if the -in argument is followed by a file name. The file will be stored in the /client/data directory.
+    Enhance JSON Storage: Modify your database to store any JSON values, not just strings.
+    Nested Key Access: Implement the ability to access and modify nested JSON values using keys in the form of JSON arrays.
+    Dynamic Object Creation: Ensure the server can dynamically create root objects if they do not exist when setting new values.
+    Selective Deletion: Implement the ability to delete nested JSON objects without affecting their parent objects.
 
 Example
 
@@ -53,42 +72,86 @@ Starting the server:
 > java Main
 Server started!
 
+There is no need to format JSON in the output.
+
 Starting the clients:
 
-> java Main -t get -k name
+> java Main -t set -k text -v "Hello World!"
 Client started!
-Sent: {"type":"get","key":"name"}
-Received: {"response":"ERROR","reason":"No such key"}
-
-> java Main -t set -k name -v "Sorabh Tomar"
-Client started!
-Sent: {"type":"set","key":"name","value":"Sorabh Tomar"}
+Sent: {"type":"set","key":"text","value":"Hello World!"}
 Received: {"response":"OK"}
 
-> java Main -t set -k name -v Sorabh
+> java Main -in setFile.json
 Client started!
-Sent: {"type":"set","key":"name","value":"Sorabh"}
+Sent:
+{
+"type":"set",
+"key":"person",
+"value":{
+"name":"Elon Musk",
+"car":{
+"model":"Tesla Roadster",
+"year":"2018"
+},
+"rocket":{
+"name":"Falcon 9",
+"launches":"87"
+}
+}
+}
 Received: {"response":"OK"}
 
-> java Main -t get -k name
+> java Main -in getFile.json
 Client started!
-Sent: {"type":"get","key":"name"}
-Received: {"response":"OK","value":"Sorabh"}
+Sent: {"type":"get","key":["person","name"]}
+Received: {"response":"OK","value":"Elon Musk"}
 
-> java Main -in testSet.json
+> java Main -in updateFile.json
 Client started!
-Sent: {"type":"set","key":"name","value":"Sorabh"}
+Sent: {"type":"set","key":["person","rocket","launches"],"value":"88"}
 Received: {"response":"OK"}
 
-> java Main -in testGet.json
+> java Main -in secondGetFile.json
 Client started!
-Sent: {"type":"get","key":"name"}
-Received: {"response":"OK","value":"Sorabh"}
+Sent: {"type":"get","key":["person"]}
+Received:
+{
+"response":"OK",
+"value":{
+"name":"Elon Musk",
+"car":{
+"model":"Tesla Roadster",
+"year":"2018"
+},
+"rocket":{
+"name":"Falcon 9",
+"launches":"88"
+}
+}
+}
 
-> java Main -in testDelete.json
+> java Main -in deleteFile.json
 Client started!
-Sent: {"type":"delete","key":"name"}
+Sent: {"type":"delete","key":["person","car","year"]}
 Received: {"response":"OK"}
+
+> java Main -in secondGetFile.json
+Client started!
+Sent: {"type":"get","key":["person"]}
+Received:
+{
+"response":"OK",
+"value":{
+"name":"Elon Musk",
+"car":{
+"model":"Tesla Roadster"
+},
+"rocket":{
+"name":"Falcon 9",
+"launches":"88"
+}
+}
+}
 
 > java Main -t exit
 Client started!

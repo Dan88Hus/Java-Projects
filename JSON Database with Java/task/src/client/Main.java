@@ -3,7 +3,9 @@ package client;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.*;
 import java.net.Socket;
@@ -35,34 +37,49 @@ public class Main {
     }
 
     private void run() {
-        try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
+
+        try (Socket socket = new Socket("localhost", 12345);
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 
-            JsonObject request;
-            if (inputFile != null) {
-                String filePath = System.getProperty("user.dir") + "/src/client/data/" + inputFile;
-                String fileContent = new String(Files.readAllBytes(Paths.get(filePath)));
-                request = gson.fromJson(fileContent, JsonObject.class);
-            } else {
-                request = new JsonObject();
-                request.addProperty("type", type);
-                request.addProperty("key", key);
-                if ("set".equals(type) && value != null) {
-                    request.addProperty("value", value);
-                }
+            JsonElement requestJson = prepareRequest();
+            if (requestJson == null) {
+                System.out.println("Invalid request");
+                return;
             }
 
-            String requestJson = gson.toJson(request);
             System.out.println("Client started!");
-            System.out.println("Sent: " + requestJson);
-            out.println(requestJson);
+            System.out.println("Sent: " + gson.toJson(requestJson));
+            out.println(gson.toJson(requestJson));
 
             String responseJson = in.readLine();
             System.out.println("Received: " + responseJson);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+    }
+
+    private JsonElement prepareRequest() {
+        try {
+            if (inputFile != null) {
+                String path = System.getProperty("user.dir") + "/src/client/data/" + inputFile;
+                String fileContent = new String(Files.readAllBytes(Paths.get(path)));
+                return JsonParser.parseString(fileContent);
+            } else {
+                return createRequestJson();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private JsonElement createRequestJson() {
+        JsonElement request = JsonParser.parseString("{}" );
+        request.getAsJsonObject().addProperty("type", type);
+        if (key != null) request.getAsJsonObject().add("key", gson.toJsonTree(key));
+        if ("set".equals(type) && value != null) request.getAsJsonObject().add("value", gson.toJsonTree(value));
+        return request;
     }
 }
