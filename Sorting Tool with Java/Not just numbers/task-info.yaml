@@ -1,0 +1,17 @@
+type: edu
+files:
+  - name: src/sorting/Main.java
+    visible: true
+    learner_created: false
+  - name: build.gradle
+    visible: true
+    learner_created: false
+  - name: test/common/SortingToolStage2Test.kt
+    visible: false
+    learner_created: false
+feedback_link: https://hyperskill.org/learn/step/5382#comment
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Tue, 11 Mar 2025 12:31:56 UTC"
+record: -1

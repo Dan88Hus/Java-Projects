@@ -1,0 +1,14 @@
+type: edu
+files:
+  - name: src/sorting/Main.java
+    visible: true
+    learner_created: false
+  - name: build.gradle
+    visible: true
+    learner_created: false
+  - name: test/common/SortingToolStage6Test.kt
+    visible: false
+    learner_created: false
+feedback_link: https://hyperskill.org/learn/step/5386#comment
+status: Unchecked
+record: -1
