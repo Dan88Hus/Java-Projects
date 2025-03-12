@@ -5,104 +5,126 @@ import java.util.*;
 
 public class Main {
     public static void main(final String[] args) {
-        boolean sortIntegers = Arrays.asList(args).contains("-sortIntegers");
+        Scanner scanner = new Scanner(System.in);
+        String dataType = "word"; // Default data type
+        String sortingType = "natural"; // Default sorting type
 
-        String dataType = "word";
-
-        if (!sortIntegers) {
-            for (int i = 0; i < args.length; i++) {
-                if ("-dataType".equals(args[i]) && i + 1 < args.length) {
-                    dataType = args[i + 1];
-                }
+        // Parse command-line arguments
+        List<String> arguments = Arrays.asList(args);
+        if (arguments.contains("-dataType")) {
+            int index = arguments.indexOf("-dataType");
+            if (index + 1 < arguments.size()) {
+                dataType = arguments.get(index + 1);
+            } else {
+                System.out.println("No data type specified!");
+                return;
+            }
+        }
+        if (arguments.contains("-sortingType")) {
+            int index = arguments.indexOf("-sortingType");
+            if (index + 1 < arguments.size()) {
+                sortingType = arguments.get(index + 1);
+            } else {
+                System.out.println("No sorting type specified!");
+                return;
             }
         }
 
-        Scanner scanner = new Scanner(System.in);
-        List<String> elements = new ArrayList<>();
-        long count = 0;
-        String maxElement = "";
-        long maxCount = 0;
+        // Store input data
+        List<String> words = new ArrayList<>();
+        List<Long> numbers = new ArrayList<>();
+        List<String> lines = new ArrayList<>();
+        Map<String, Integer> wordFrequency = new HashMap<>();
+        Map<Long, Integer> numberFrequency = new HashMap<>();
+        Map<String, Integer> lineFrequency = new HashMap<>();
 
         while (scanner.hasNextLine()) {
-            String line = scanner.nextLine().trim();
-            if (line.isEmpty()) continue;
-
-            if (sortIntegers) {
-                String[] tokens = line.split("\\s+");
+            String input = scanner.nextLine();
+            if (dataType.equals("long")) {
+                String[] tokens = input.split("\\s+");
                 for (String token : tokens) {
-                    try {
-                        BigInteger number = new BigInteger(token);
-                        elements.add(token);
-                        count++;
-                    } catch (NumberFormatException ignored) {}
-                }
-            } else if (dataType.equals("long")) {
-                String[] tokens = line.split("\\s+");
-                for (String token : tokens) {
-                    try {
-                        BigInteger number = new BigInteger(token);
-                        elements.add(token);
-                        count++;
-                        if (maxElement.isEmpty() || number.compareTo(new BigInteger(maxElement)) > 0) {
-                            maxElement = token;
-                            maxCount = 1;
-                        } else if (number.compareTo(new BigInteger(maxElement)) == 0) {
-                            maxCount++;
+                    if (!token.isEmpty()) {
+                        try {
+                            long number = Long.parseLong(token);
+                            numbers.add(number);
+                            numberFrequency.put(number, numberFrequency.getOrDefault(number, 0) + 1);
+                        } catch (NumberFormatException e) {
+                            System.out.println("\"" + token + "\" is not a valid long.");
                         }
-                    } catch (NumberFormatException ignored) {}
-                }
-            } else if (dataType.equals("line")) {
-                elements.add(line);
-                count++;
-                if (line.length() > maxElement.length() || maxElement.isEmpty() || (line.length() == maxElement.length() && line.compareTo(maxElement) < 0)) {
-                    maxElement = line;
-                    maxCount = 1;
-                } else if (line.equals(maxElement)) {
-                    maxCount++;
-                }
-            } else if (dataType.equals("word")) {
-                String[] words = line.split("\\s+");
-                for (String word : words) {
-                    // Remove the integer validation check
-                    elements.add(word);
-                    count++;
-                    if (word.length() > maxElement.length() || maxElement.isEmpty() || (word.length() == maxElement.length() && word.compareTo(maxElement) < 0)) {
-                        maxElement = word;
-                        maxCount = 1;
-                    } else if (word.equals(maxElement)) {
-                        maxCount++;
                     }
                 }
+            } else if (dataType.equals("word")) {
+                String[] tokens = input.split("\\s+");
+                for (String token : tokens) {
+                    if (!token.isEmpty()) {
+                        words.add(token);
+                        wordFrequency.put(token, wordFrequency.getOrDefault(token, 0) + 1);
+                    }
+                }
+            } else if (dataType.equals("line")) {
+                lines.add(input);
+                lineFrequency.put(input, lineFrequency.getOrDefault(input, 0) + 1);
             }
         }
 
-        if (sortIntegers) {
-            Collections.sort(elements, (a, b) -> {
-                try {
-                    return new BigInteger(a).compareTo(new BigInteger(b));
-                } catch (NumberFormatException e) {
-                    return a.compareTo(b);
+        // Sorting and printing results
+        if (sortingType.equals("natural")) {
+            if (dataType.equals("long")) {
+                Collections.sort(numbers);
+                System.out.println("Total numbers: " + numbers.size() + ".");
+                System.out.print("Sorted data: ");
+                for (Long num : numbers) {
+                    System.out.print(num + " ");
                 }
-            });
-            System.out.println("Total numbers: " + count + ".");
-            System.out.print("Sorted data: ");
-            for (String element : elements) {
-                System.out.print(element + " ");
+                System.out.println();
+            } else if (dataType.equals("word")) {
+                Collections.sort(words);
+                System.out.println("Total words: " + words.size() + ".");
+                System.out.print("Sorted data: ");
+                for (String word : words) {
+                    System.out.print(word + " ");
+                }
+                System.out.println();
+            } else if (dataType.equals("line")) {
+                Collections.sort(lines);
+                System.out.println("Total lines: " + lines.size() + ".");
+                System.out.println("Sorted data:");
+                for (String line : lines) {
+                    System.out.println(line);
+                }
             }
-            System.out.println();
-        } else if (dataType.equals("long")) {
-            System.out.println("Total numbers: " + count + ".");
-            System.out.println("The greatest number: " + maxElement + " (" + maxCount + " time(s), " + Math.round(maxCount * 100.0 / count) + "%).");
-        } else if (dataType.equals("line")) {
-            System.out.println("Total lines: " + count + ".");
-            System.out.println("The longest line:");
-            System.out.println(maxElement);
-            System.out.println("(" + maxCount + " time(s), " + Math.round(maxCount * 100.0 / count) + "%).");
-        } else if (dataType.equals("word")) {
-            System.out.println("Total words: " + count + ".");
-            System.out.println("The longest word: " + maxElement + " (" + maxCount + " time(s), " + Math.round(maxCount * 100.0 / count) + "%).");
-        } else {
-            System.out.println("Invalid data type specified.");
+        } else if (sortingType.equals("byCount")) {
+            if (dataType.equals("long")) {
+                List<Map.Entry<Long, Integer>> sortedEntries = new ArrayList<>(numberFrequency.entrySet());
+                sortedEntries.sort(Comparator.comparing(Map.Entry<Long, Integer>::getValue)
+                        .thenComparing(Map.Entry::getKey));
+
+                System.out.println("Total numbers: " + numbers.size() + ".");
+                for (Map.Entry<Long, Integer> entry : sortedEntries) {
+                    double percentage = (entry.getValue() * 100.0) / numbers.size();
+                    System.out.printf("%d: %d time(s), %.0f%%%n", entry.getKey(), entry.getValue(), percentage);
+                }
+            } else if (dataType.equals("word")) {
+                List<Map.Entry<String, Integer>> sortedEntries = new ArrayList<>(wordFrequency.entrySet());
+                sortedEntries.sort(Comparator.comparing(Map.Entry<String, Integer>::getValue)
+                        .thenComparing(Map.Entry::getKey));
+
+                System.out.println("Total words: " + words.size() + ".");
+                for (Map.Entry<String, Integer> entry : sortedEntries) {
+                    double percentage = (entry.getValue() * 100.0) / words.size();
+                    System.out.printf("%s: %d time(s), %.0f%%%n", entry.getKey(), entry.getValue(), percentage);
+                }
+            } else if (dataType.equals("line")) {
+                List<Map.Entry<String, Integer>> sortedEntries = new ArrayList<>(lineFrequency.entrySet());
+                sortedEntries.sort(Comparator.comparing(Map.Entry<String, Integer>::getValue)
+                        .thenComparing(Map.Entry::getKey));
+
+                System.out.println("Total lines: " + lines.size() + ".");
+                for (Map.Entry<String, Integer> entry : sortedEntries) {
+                    double percentage = (entry.getValue() * 100.0) / lines.size();
+                    System.out.printf("%s: %d time(s), %.0f%%%n", entry.getKey(), entry.getValue(), percentage);
+                }
+            }
         }
     }
 }
