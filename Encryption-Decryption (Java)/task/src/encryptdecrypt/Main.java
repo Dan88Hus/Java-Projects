@@ -1,5 +1,9 @@
 package encryptdecrypt;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
@@ -8,6 +12,8 @@ public class Main {
         String mode = "enc";
         int key = 0;
         String data = "";
+        String inputFile = null;
+        String outputFile = null;
 
         // Parse command-line arguments
         for (int i = 0; i < args.length; i += 2) {
@@ -31,8 +37,19 @@ public class Main {
                 case "-data":
                     data = value;
                     break;
+                case "-in":
+                    inputFile = value;
+                    break;
+                case "-out":
+                    outputFile = value;
+                    break;
             }
         }
+        // Get input data (prefer -data over -in)
+        if (data.isEmpty() && inputFile != null) {
+            data = readFromFile(inputFile);
+        }
+
 // Process the data based on mode
         String result;
         if ("enc".equals(mode)) {
@@ -43,7 +60,38 @@ public class Main {
             result = "Unknown mode: " + mode;
         }
 
-        System.out.println(result);
+        if (outputFile != null) {
+            writeToFile(outputFile, result);
+        } else {
+            System.out.println(result);
+        }
+    }
+
+    private static void writeToFile(String fileName, String content) {
+        try (FileWriter writer = new FileWriter(fileName)) {
+            writer.write(content);
+        } catch (IOException e) {
+            System.out.println("Error: Could not write to output file: " + fileName);
+        }
+    }
+
+    private static String readFromFile(String fileName) {
+        StringBuilder content = new StringBuilder();
+        File file = new File(fileName);
+
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                content.append(scanner.nextLine());
+                if (scanner.hasNextLine()) {
+                    content.append("\n");
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: Input file not found: " + fileName);
+            return "";
+        }
+
+        return content.toString();
     }
 
     private static String decrypt(String ciphertext, int key) {
