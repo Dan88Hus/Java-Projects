@@ -6,6 +6,9 @@ files:
   - name: test/EncryptDecryptTest.java
     visible: false
     learner_created: false
-feedback_link: https://hyperskill.org/projects/46/stages/246/implement#comment
-status: Unchecked
+feedback_link: https://hyperskill.org/learn/step/5388#comment
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Sat, 15 Mar 2025 14:19:28 UTC"
 record: -1
