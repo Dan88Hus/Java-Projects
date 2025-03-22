@@ -6,6 +6,9 @@ files:
   - name: test/BlockchainTest.java
     visible: false
     learner_created: false
-feedback_link: https://hyperskill.org/projects/50/stages/272/implement#comment
-status: Unchecked
+feedback_link: https://hyperskill.org/learn/step/5414#comment
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Sat, 22 Mar 2025 14:23:17 UTC"
 record: -1

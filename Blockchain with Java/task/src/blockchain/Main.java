@@ -1,31 +1,36 @@
 package blockchain;
-
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import java.util.Random;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter how many zeros the hash must start with: ");
+        int zeros = scanner.nextInt();
+        System.out.println();
+
         Blockchain blockchain = new Blockchain();
 
-        // Generate 4 more blocks (the genesis block was already created)
-        for (int i = 0; i < 4; i++) {
-            blockchain.generateNextBlock();
+        // Generate 5 blocks (including genesis block)
+        for (int i = 0; i < 5; i++) {
+            blockchain.generateNextBlock(zeros);
+            System.out.println(blockchain.getLatestBlock());
+
+            // Add empty line between blocks except after the last one
+            if (i < 4) {
+                System.out.println();
+            }
         }
-
-        // Print the blockchain
-        blockchain.printBlockchain();
-
-        // Validate the blockchain
-//        System.out.println("Is blockchain valid? " + blockchain.isChainValid());
     }
 }
 
 class StringUtil {
     /* Applies Sha256 to a string and returns a hash. */
-    public static String applySha256(String input){
+    public static String applySha256(String input) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             /* Applies sha256 to our input */
@@ -49,16 +54,41 @@ class Block {
     private long timestamp;
     private String previousHash;
     private String hash;
+    private int magicNumber;
+    private long generationTime;
 
-    public Block(int id, String previousHash) {
+    public Block(int id, String previousHash, int zeros) {
         this.id = id;
         this.timestamp = System.currentTimeMillis();
         this.previousHash = previousHash;
+
+        // Start timing the block generation
+        long startTime = System.currentTimeMillis();
+
+        // Find a valid hash with proof of work
+        this.magicNumber = findMagicNumber(zeros);
         this.hash = calculateHash();
+
+        // Calculate generation time in seconds
+        this.generationTime = (System.currentTimeMillis() - startTime) / 1000;
+    }
+
+    private int findMagicNumber(int zeros) {
+        Random random = new Random();
+        int magicNumber;
+        String hash;
+        String prefix = "0".repeat(zeros);
+
+        do {
+            magicNumber = random.nextInt(100000000);
+            hash = StringUtil.applySha256(id + timestamp + previousHash + magicNumber);
+        } while (!hash.startsWith(prefix));
+
+        return magicNumber;
     }
 
     public String calculateHash() {
-        return StringUtil.applySha256(id + timestamp + previousHash);
+        return StringUtil.applySha256(id + timestamp + previousHash + magicNumber);
     }
 
     public int getId() {
@@ -77,15 +107,25 @@ class Block {
         return hash;
     }
 
+    public int getMagicNumber() {
+        return magicNumber;
+    }
+
+    public long getGenerationTime() {
+        return generationTime;
+    }
+
     @Override
     public String toString() {
         return "Block:\n" +
                 "Id: " + id + "\n" +
                 "Timestamp: " + timestamp + "\n" +
-                "Hash of the previous block:\n" +  // Ensure this is on its own line
+                "Magic number: " + magicNumber + "\n" +
+                "Hash of the previous block:\n" +
                 previousHash + "\n" +
-                "Hash of the block:\n" +  // Ensure this is on its own line
-                hash ;
+                "Hash of the block:\n" +
+                hash + "\n" +
+                "Block was generating for " + generationTime + " seconds";
     }
 }
 
@@ -94,22 +134,21 @@ class Blockchain {
 
     public Blockchain() {
         blockchain = new ArrayList<>();
-        // Create the genesis block
-        createGenesisBlock();
     }
 
-    private void createGenesisBlock() {
-        // Genesis block has id = 1 and previousHash = "0"
-        Block genesisBlock = new Block(1, "0");
-        blockchain.add(genesisBlock);
-    }
-
-    public Block generateNextBlock() {
-        Block lastBlock = getLatestBlock();
-        int nextId = lastBlock.getId() + 1;
-        Block newBlock = new Block(nextId, lastBlock.getHash());
-        blockchain.add(newBlock);
-        return newBlock;
+    public Block generateNextBlock(int zeros) {
+        if (blockchain.isEmpty()) {
+            // Create genesis block with id = 1 and previousHash = "0"
+            Block genesisBlock = new Block(1, "0", zeros);
+            blockchain.add(genesisBlock);
+            return genesisBlock;
+        } else {
+            Block lastBlock = getLatestBlock();
+            int nextId = lastBlock.getId() + 1;
+            Block newBlock = new Block(nextId, lastBlock.getHash(), zeros);
+            blockchain.add(newBlock);
+            return newBlock;
+        }
     }
 
     public Block getLatestBlock() {
@@ -134,15 +173,7 @@ class Blockchain {
         return true;
     }
 
-    public void printBlockchain() {
-        for (Block block : blockchain) {
-            System.out.println(block);
-            System.out.println();
-        }
-    }
-
     public List<Block> getBlockchain() {
         return blockchain;
     }
 }
-
